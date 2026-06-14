@@ -3,10 +3,10 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 
-// Uniform distribution of points on a sphere via the Fibonacci / golden-angle spiral
+// Evenly distributed points on a sphere via the Fibonacci / golden-angle spiral
 function fibonacciSphere(n: number, radius: number): Float32Array {
   const buf = new Float32Array(n * 3)
-  const phi = Math.PI * (3 - Math.sqrt(5)) // golden angle ≈ 2.399 rad
+  const phi = Math.PI * (3 - Math.sqrt(5))
   for (let i = 0; i < n; i++) {
     const y     = 1 - (i / (n - 1)) * 2
     const r     = Math.sqrt(1 - y * y)
@@ -18,60 +18,53 @@ function fibonacciSphere(n: number, radius: number): Float32Array {
   return buf
 }
 
-// ── ShaderMaterial shaders (GLSL1 syntax) ────────────────────────────────────
-// ShaderMaterial (NOT RawShaderMaterial) — Three.js automatically prepends all
-// built-in uniforms (modelMatrix, modelViewMatrix, projectionMatrix, etc.) and
-// handles the WebGL1/2 GLSL conversion. Do NOT declare those builtins here.
+// ── Shaders (GLSL1 syntax — Three.js ShaderMaterial auto-provides builtins) ──
 
 const VERT = /* glsl */`
   uniform float uDPR;
+  uniform vec2  uMouseNDC;    // cursor in WebGL NDC space (-1..1)
+  uniform float uMouseActive; // 0 = no hover, 1 = hovering
+
   varying float vFacing;
+  varying float vHighlight;
 
   void main() {
-    // World-space outward normal → how directly this point faces the camera (+Z)
-    vec3 wNorm   = normalize((modelMatrix * vec4(normalize(position), 0.0)).xyz);
-    vFacing      = clamp(wNorm.z * 0.5 + 0.5, 0.0, 1.0);
+    // World-space outward normal: tells us how directly this dot faces the camera
+    vec3 wNorm  = normalize((modelMatrix * vec4(normalize(position), 0.0)).xyz);
+    vFacing     = clamp(wNorm.z * 0.5 + 0.5, 0.0, 1.0);
 
-    vec4 mv      = modelViewMatrix * vec4(position, 1.0);
-    // Front dots are bigger; back dots are smaller — gives the sphere 3D depth
-    gl_PointSize = mix(1.2, 4.8, vFacing) * uDPR;
-    gl_Position  = projectionMatrix * mv;
+    vec4 mv     = modelViewMatrix * vec4(position, 1.0);
+    vec4 clip   = projectionMatrix * mv;
+
+    // Screen-space distance between this dot and the cursor
+    vec2  ndc   = clip.xy / clip.w;
+    float dist  = length(ndc - uMouseNDC);
+    // Only front-facing dots glow; smoothstep creates a soft radius of ~0.22 NDC units
+    vHighlight  = vFacing * smoothstep(0.22, 0.0, dist) * uMouseActive;
+
+    // Front dots bigger, back dots smaller; cursor-near dots get an extra boost
+    gl_PointSize = (mix(1.2, 4.8, vFacing) + vHighlight * 5.0) * uDPR;
+    gl_Position  = clip;
   }
 `
 
 const FRAG = /* glsl */`
   uniform vec3  uColor;
   uniform float uMaxAlpha;
+
   varying float vFacing;
+  varying float vHighlight;
 
   void main() {
-    // Discard the square corners → circular dot
+    // Circular dot — discard square corners
     float d      = length(gl_PointCoord - vec2(0.5));
     if (d > 0.5) discard;
     float circle = 1.0 - smoothstep(0.38, 0.5, d);
-    float alpha  = mix(0.04, uMaxAlpha, vFacing) * circle;
+    // Highlighted dots are fully opaque; back dots are nearly invisible
+    float alpha  = min(1.0, mix(0.04, uMaxAlpha, vFacing) + vHighlight * 0.6) * circle;
     gl_FragColor = vec4(uColor, alpha);
   }
 `
-
-function makeLayer(n: number, radius: number, maxAlpha: number, dpr: number): THREE.Points {
-  const geo = new THREE.BufferGeometry()
-  geo.setAttribute('position', new THREE.BufferAttribute(fibonacciSphere(n, radius), 3))
-
-  const mat = new THREE.ShaderMaterial({
-    uniforms: {
-      uColor:    { value: new THREE.Color(0xc4973d) },
-      uDPR:      { value: dpr },
-      uMaxAlpha: { value: maxAlpha },
-    },
-    vertexShader:   VERT,
-    fragmentShader: FRAG,
-    transparent:    true,
-    depthWrite:     false,
-    blending:       THREE.AdditiveBlending,
-  })
-  return new THREE.Points(geo, mat)
-}
 
 export default function EcosystemSphere() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -79,6 +72,13 @@ export default function EcosystemSphere() {
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
+
+    // ── Device detection ──────────────────────────────────────────────
+    const isMobile  = window.innerWidth < 768
+    const hasTouch  = 'ontouchstart' in window
+    const outerN    = isMobile ? 520  : 900
+    const innerN    = isMobile ? 150  : 260
+    const cloudN    = isMobile ? 60   : 110
 
     // ── Renderer ──────────────────────────────────────────────────────
     const dpr      = Math.min(window.devicePixelRatio, 2)
@@ -91,21 +91,41 @@ export default function EcosystemSphere() {
     const camera = new THREE.PerspectiveCamera(42, canvas.clientWidth / canvas.clientHeight, 0.1, 100)
     camera.position.z = 7.5
 
-    // ── Sphere layers inside a single pivot ───────────────────────────
+    // ── Shared mouse uniforms (both layers reference the same objects) ─
+    // Updating .value here updates both materials simultaneously.
+    const uMouseNDC    = { value: new THREE.Vector2(99, 99) } // 99 = off-screen
+    const uMouseActive = { value: 0.0 }
+
+    const makeLayer = (n: number, radius: number, maxAlpha: number): THREE.Points => {
+      const geo = new THREE.BufferGeometry()
+      geo.setAttribute('position', new THREE.BufferAttribute(fibonacciSphere(n, radius), 3))
+      const mat = new THREE.ShaderMaterial({
+        uniforms: {
+          uColor:       { value: new THREE.Color(0xc4973d) },
+          uDPR:         { value: dpr },
+          uMaxAlpha:    { value: maxAlpha },
+          uMouseNDC,
+          uMouseActive,
+        },
+        vertexShader:   VERT,
+        fragmentShader: FRAG,
+        transparent:    true,
+        depthWrite:     false,
+        blending:       THREE.AdditiveBlending,
+      })
+      return new THREE.Points(geo, mat)
+    }
+
     const pivot = new THREE.Group()
     scene.add(pivot)
-
-    // Outer shell: 900 dots at full brightness when facing camera
-    const outer = makeLayer(900, 2.0, 0.92, dpr)
-    // Inner core: 260 dimmer dots visible through the surface → depth
-    const inner = makeLayer(260, 1.3, 0.28, dpr)
+    const outer = makeLayer(outerN, 2.0, 0.92)
+    const inner = makeLayer(innerN, 1.3, 0.28)
     pivot.add(outer)
     pivot.add(inner)
 
-    // ── Floating cloud outside the pivot (moves independently) ────────
-    const CLOUD_N  = 110
-    const cloudBuf = new Float32Array(CLOUD_N * 3)
-    for (let i = 0; i < CLOUD_N; i++) {
+    // ── Ambient floating cloud ────────────────────────────────────────
+    const cloudBuf = new Float32Array(cloudN * 3)
+    for (let i = 0; i < cloudN; i++) {
       const r     = 2.5 + Math.random() * 1.5
       const theta = Math.random() * Math.PI * 2
       const phi   = Math.acos(2 * Math.random() - 1)
@@ -122,29 +142,72 @@ export default function EcosystemSphere() {
     }))
     scene.add(cloud)
 
-    // ── Mouse / touch drag ────────────────────────────────────────────
+    // ── Rotation state ────────────────────────────────────────────────
+    // baseAngle: always-incrementing auto-rotation Y
+    // hoverTiltX/Y: additional lean when hovering
+    // dragX/Y: extra rotation applied via drag
+    let baseAngle  = 0
+    let hoverTiltX = 0, hoverAddY = 0    // hover offsets (ease toward mouse)
+    let dragRotX   = 0                    // drag-applied X tilt
+    let velX       = 0, velY = 0          // drag inertia
     let isDragging = false
+    let isHovering = false
     let prevX = 0, prevY = 0
-    let velX  = 0, velY  = 0
+    // CSS-space cursor position (0–1 each axis)
+    let mouseCSSX = 0.5, mouseCSSY = 0.5
 
-    canvas.style.cursor = 'grab'
+    if (!hasTouch) canvas.style.cursor = 'grab'
 
+    // ── Mouse events ──────────────────────────────────────────────────
+    const onMouseEnter = () => {
+      isHovering = true
+      uMouseActive.value = 1
+      if (!hasTouch) canvas.style.cursor = 'grab'
+    }
+    const onMouseLeave = () => {
+      isHovering = false
+      isDragging = false
+      uMouseActive.value = 0
+      uMouseNDC.value.set(99, 99)
+      if (!hasTouch) canvas.style.cursor = 'default'
+    }
+    const onMouseMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect()
+      mouseCSSX = (e.clientX - rect.left) / rect.width
+      mouseCSSY = (e.clientY - rect.top)  / rect.height
+
+      // Convert to WebGL NDC for the highlight shader
+      uMouseNDC.value.set(
+        mouseCSSX * 2 - 1,
+        -(mouseCSSY * 2 - 1)   // flip Y: CSS top=0 → NDC top=+1
+      )
+
+      if (isDragging) {
+        velY = (e.clientX - prevX) * 0.006
+        velX = (e.clientY - prevY) * 0.006
+        dragRotX  = Math.max(-1.1, Math.min(1.1, dragRotX + velX))
+        baseAngle += velY
+        prevX = e.clientX; prevY = e.clientY
+      }
+    }
     const onMouseDown = (e: MouseEvent) => {
       isDragging = true
       prevX = e.clientX; prevY = e.clientY
       velX = velY = 0
-      canvas.style.cursor = 'grabbing'
+      if (!hasTouch) canvas.style.cursor = 'grabbing'
     }
-    const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return
-      velY = (e.clientX - prevX) * 0.006
-      velX = (e.clientY - prevY) * 0.006
-      pivot.rotation.y += velY
-      pivot.rotation.x  = Math.max(-1.1, Math.min(1.1, pivot.rotation.x + velX))
-      prevX = e.clientX; prevY = e.clientY
+    const onMouseUp = () => {
+      isDragging = false
+      if (!hasTouch) canvas.style.cursor = isHovering ? 'grab' : 'default'
     }
-    const onMouseUp = () => { isDragging = false; canvas.style.cursor = 'grab' }
 
+    canvas.addEventListener('mouseenter', onMouseEnter)
+    canvas.addEventListener('mouseleave', onMouseLeave)
+    canvas.addEventListener('mousemove',  onMouseMove)
+    canvas.addEventListener('mousedown',  onMouseDown)
+    window.addEventListener('mouseup',    onMouseUp)
+
+    // ── Touch events (drag only — no hover on touch) ──────────────────
     const onTouchStart = (e: TouchEvent) => {
       const t = e.touches[0]
       prevX = t.clientX; prevY = t.clientY
@@ -156,15 +219,12 @@ export default function EcosystemSphere() {
       const t = e.touches[0]
       velY = (t.clientX - prevX) * 0.006
       velX = (t.clientY - prevY) * 0.006
-      pivot.rotation.y += velY
-      pivot.rotation.x  = Math.max(-1.1, Math.min(1.1, pivot.rotation.x + velX))
+      dragRotX   = Math.max(-1.1, Math.min(1.1, dragRotX + velX))
+      baseAngle += velY
       prevX = t.clientX; prevY = t.clientY
     }
     const onTouchEnd = () => { isDragging = false }
 
-    canvas.addEventListener('mousedown', onMouseDown)
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
     canvas.addEventListener('touchstart', onTouchStart, { passive: true })
     canvas.addEventListener('touchmove',  onTouchMove,  { passive: false })
     canvas.addEventListener('touchend',   onTouchEnd)
@@ -182,13 +242,34 @@ export default function EcosystemSphere() {
         const dt  = Math.min((now - lastTs) * 0.001, 0.05)
         lastTs = now
 
-        if (!isDragging) {
-          velX *= 0.94; velY *= 0.94
-          pivot.rotation.x  = Math.max(-1.1, Math.min(1.1, pivot.rotation.x + velX))
-          pivot.rotation.y += velY + dt * 0.08
-          // Inner core counter-drifts for a subtle parallax through the surface
-          inner.rotation.y -= dt * 0.038
+        if (isDragging) {
+          // Friction while dragging so inertia is fresh on release
+          velX *= 0.6; velY *= 0.6
+        } else {
+          // Inertia after drag release
+          baseAngle += velY; velY *= 0.94
+          dragRotX  += velX; velX *= 0.94
+          // Auto Y rotation (slows while hovering for a focus feel)
+          baseAngle += dt * (isHovering ? 0.025 : 0.08)
+          // X drifts back to 0 when not dragging
+          dragRotX  *= 0.97
         }
+
+        // Hover tilt: sphere leans toward the cursor position
+        if (isHovering && !isDragging) {
+          const targetX =  (mouseCSSY - 0.5) * 0.7  // up/down lean
+          const targetY = -(mouseCSSX - 0.5) * 0.6  // left/right lean (offset from base)
+          hoverTiltX += (targetX - hoverTiltX) * 0.055
+          hoverAddY  += (targetY - hoverAddY)  * 0.055
+        } else {
+          // Ease hover offsets back to neutral
+          hoverTiltX *= 0.93
+          hoverAddY  *= 0.93
+        }
+
+        pivot.rotation.x = Math.max(-1.1, Math.min(1.1, dragRotX + hoverTiltX))
+        pivot.rotation.y = baseAngle + hoverAddY
+        inner.rotation.y = -baseAngle * 0.38  // counter-drift for parallax depth
 
         cloud.rotation.y += dt * 0.015
         cloud.rotation.x += dt * 0.007
@@ -209,16 +290,17 @@ export default function EcosystemSphere() {
       camera.updateProjectionMatrix()
       renderer.setSize(w, h, false)
     }
-    // Call once immediately in case dimensions settled after mount
     onResize()
     window.addEventListener('resize', onResize)
 
     return () => {
       stopped = true
       cancelAnimationFrame(rafId)
-      canvas.removeEventListener('mousedown', onMouseDown)
-      window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
+      canvas.removeEventListener('mouseenter', onMouseEnter)
+      canvas.removeEventListener('mouseleave', onMouseLeave)
+      canvas.removeEventListener('mousemove',  onMouseMove)
+      canvas.removeEventListener('mousedown',  onMouseDown)
+      window.removeEventListener('mouseup',    onMouseUp)
       canvas.removeEventListener('touchstart', onTouchStart)
       canvas.removeEventListener('touchmove',  onTouchMove)
       canvas.removeEventListener('touchend',   onTouchEnd)
