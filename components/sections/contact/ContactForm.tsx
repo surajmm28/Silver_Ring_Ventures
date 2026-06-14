@@ -91,7 +91,7 @@ export default function ContactForm() {
   const fieldWrap = { marginBottom: 32 }
 
   return (
-    <div style={{
+    <div className="contact-form-panel" style={{
       background: 'var(--deep)',
       padding: '80px 60px',
       height: '100%',
@@ -109,7 +109,7 @@ export default function ContactForm() {
       </div>
 
       <form onSubmit={handleSubmit} noValidate>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, columnGap: 40 }}>
+        <div className="contact-form-row">
           <div style={fieldWrap}>
             <label style={labelStyle}>Full Name *</label>
             <input
@@ -137,7 +137,7 @@ export default function ContactForm() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, columnGap: 40 }}>
+        <div className="contact-form-row">
           <div style={fieldWrap}>
             <label style={labelStyle}>Phone Number *</label>
             <input

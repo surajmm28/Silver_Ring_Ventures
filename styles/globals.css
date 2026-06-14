@@ -1114,3 +1114,291 @@ canvas {
     padding: 160px 80px;
   }
 }
+
+/* ========================
+   RESPONSIVE LAYOUT CLASSES
+   ======================== */
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 60px;
+  margin-bottom: 80px;
+}
+
+.about-preview-grid {
+  display: grid;
+  grid-template-columns: 55% 45%;
+  gap: 80px;
+  align-items: center;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+}
+
+.contact-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+.contact-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 40px;
+}
+
+@media (max-width: 768px) {
+  /* Footer */
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 48px;
+  }
+
+  /* About preview */
+  .about-preview-section {
+    padding: 80px 24px 0 !important;
+  }
+  .about-preview-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .about-ring-container {
+    height: 260px !important;
+  }
+
+  /* Stats bar (2-col on mobile) */
+  .stats-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stat-item:nth-child(2) {
+    border-right: none;
+  }
+  .stat-item:nth-child(3),
+  .stat-item:nth-child(4) {
+    border-top: 0.5px solid var(--faint);
+  }
+
+  /* Why Silverring */
+  .why-section {
+    padding: 80px 24px !important;
+  }
+  .why-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  /* Ecosystem preview */
+  .eco-preview-section {
+    padding: 80px 24px !important;
+  }
+  .eco-row {
+    grid-template-columns: 48px 1fr !important;
+  }
+  .eco-row-tagline,
+  .eco-row-arrow {
+    display: none !important;
+  }
+
+  /* Projects preview */
+  .projects-preview-section {
+    padding: 80px 0 80px 24px !important;
+  }
+  .projects-preview-header {
+    padding-right: 24px !important;
+  }
+  .projects-preview-footer {
+    padding-right: 24px !important;
+    margin-top: 32px !important;
+  }
+
+  /* Hero */
+  .hero-meta {
+    gap: 20px !important;
+    flex-wrap: wrap !important;
+  }
+  .hero-ctas {
+    gap: 24px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  /* About hero */
+  .about-hero-section {
+    padding: 0 24px !important;
+  }
+  .about-hero-bottom {
+    left: 24px !important;
+    right: 24px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    bottom: 32px !important;
+  }
+
+  /* Vision / Mission */
+  .vision-section {
+    padding: 80px 24px !important;
+  }
+
+  /* Integrated model */
+  .integrated-section {
+    padding: 80px 24px !important;
+  }
+  .network-diagram {
+    height: 300px !important;
+    max-width: 100% !important;
+  }
+
+  /* Values */
+  .values-section {
+    padding: 80px 24px !important;
+  }
+  .values-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Contact split */
+  .contact-split {
+    grid-template-columns: 1fr;
+    min-height: unset;
+  }
+  .contact-info-panel {
+    padding: 80px 24px !important;
+  }
+  .contact-form-panel {
+    padding: 60px 24px !important;
+  }
+
+  /* Contact form rows */
+  .contact-form-row {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+  }
+}
+
+/* Map info grid */
+.map-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+}
+
+/* Lifecycle inner content grid */
+.lc-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Project grid */
+.pgrid-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+}
+
+/* Unit list content grids */
+.unit-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  margin-bottom: 60px;
+}
+
+.unit-advantages-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+@media (max-width: 768px) {
+  /* Map */
+  .map-container {
+    height: 300px !important;
+  }
+  .map-info-grid {
+    grid-template-columns: 1fr;
+    padding: 40px 24px !important;
+  }
+  .map-col {
+    padding: 20px 0 !important;
+    border-bottom: 0.5px solid var(--faint);
+  }
+  .map-col:last-child {
+    border-bottom: none;
+  }
+
+  /* FAQ */
+  .faq-section {
+    padding: 80px 24px !important;
+  }
+
+  /* Lifecycle inner content */
+  .lc-content-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  /* Ecosystem / Projects heroes */
+  .eco-hero-section {
+    padding: 0 24px !important;
+  }
+  .projects-hero-section {
+    padding: 0 24px 48px !important;
+  }
+
+  /* Project grid page */
+  .pgrid-section {
+    padding: 0 24px 80px !important;
+  }
+  .pgrid-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pgrid-cta-section {
+    padding: 80px 24px !important;
+  }
+  .pgrid-filter-btn {
+    padding: 16px 20px !important;
+  }
+
+  /* Unit list */
+  .unit-content-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  .unit-advantages-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .unit-number {
+    font-size: clamp(60px, 28vw, 120px) !important;
+    left: 24px !important;
+    top: 32px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .pgrid-grid {
+    grid-template-columns: 1fr;
+  }
+}

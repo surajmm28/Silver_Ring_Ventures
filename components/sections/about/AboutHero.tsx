@@ -16,6 +16,7 @@ export default function AboutHero() {
 
   return (
     <section
+      className="about-hero-section"
       style={{
         height: '100vh',
         background: 'var(--black)',
@@ -73,7 +74,7 @@ export default function AboutHero() {
       </div>
 
       {/* Bottom meta */}
-      <div style={{
+      <div className="about-hero-bottom" style={{
         position: 'absolute',
         bottom: 48,
         left: 60,

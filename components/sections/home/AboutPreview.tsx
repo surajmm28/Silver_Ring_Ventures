@@ -62,9 +62,10 @@ export default function AboutPreview() {
   return (
     <section
       ref={sectionRef}
+      className="about-preview-section"
       style={{ background: 'var(--black)', padding: '140px 60px 0' }}
     >
-      <div style={{ display: 'grid', gridTemplateColumns: '55% 45%', gap: 80, alignItems: 'center' }}>
+      <div className="about-preview-grid">
         {/* Left */}
         <div>
           <SectionTag label="01  ABOUT SILVERRING" />
@@ -116,7 +117,7 @@ export default function AboutPreview() {
         </div>
 
         {/* Right — Ring */}
-        <div style={{ height: 480, position: 'relative' }}>
+        <div className="about-ring-container" style={{ height: 480, position: 'relative' }}>
           <RingModel />
         </div>
       </div>

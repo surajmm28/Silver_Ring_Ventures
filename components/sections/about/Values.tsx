@@ -40,7 +40,7 @@ export default function Values() {
   }
 
   return (
-    <section ref={sectionRef} style={{ background: 'var(--deep)', padding: '120px 60px' }}>
+    <section ref={sectionRef} className="values-section" style={{ background: 'var(--deep)', padding: '120px 60px' }}>
       <SectionTag label="03  OUR VALUES" />
       <div style={{
         fontFamily: "'Barlow Condensed', sans-serif",
@@ -54,7 +54,7 @@ export default function Values() {
         WHAT WE <span style={{ color: 'var(--gold)' }}>STAND FOR.</span>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1 }}>
+      <div className="values-grid">
         {values.map((val) => (
           <div
             key={val.number}

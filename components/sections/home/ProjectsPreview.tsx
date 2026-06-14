@@ -60,9 +60,10 @@ export default function ProjectsPreview() {
   return (
     <section
       ref={sectionRef}
+      className="projects-preview-section"
       style={{ background: 'var(--black)', padding: '140px 0 140px 60px' }}
     >
-      <div style={{ paddingRight: 60, marginBottom: 60 }}>
+      <div className="projects-preview-header" style={{ paddingRight: 60, marginBottom: 60 }}>
         <SectionTag label="03  PROJECTS" />
         <div
           style={{
@@ -183,7 +184,7 @@ export default function ProjectsPreview() {
         ))}
       </div>
 
-      <div style={{ marginTop: 48, paddingRight: 60 }}>
+      <div className="projects-preview-footer" style={{ marginTop: 48, paddingRight: 60 }}>
         <a href="/projects" className="btn-text" data-cursor="cta">
           VIEW ALL PROJECTS →
         </a>

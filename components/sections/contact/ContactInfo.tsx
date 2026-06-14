@@ -68,6 +68,7 @@ export default function ContactInfo() {
     <div
       ref={panelRef}
       onMouseMove={handleMouseMove}
+      className="contact-info-panel"
       style={{
         background: 'var(--black)',
         padding: '80px 60px',

@@ -29,9 +29,10 @@ export default function WhySilverring() {
   return (
     <section
       ref={sectionRef}
+      className="why-section"
       style={{ background: 'var(--deep)', padding: '120px 60px' }}
     >
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'start' }}>
+      <div className="why-grid">
         {/* Left */}
         <div>
           <SectionTag label="04  WHY SILVERRING" />

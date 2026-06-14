@@ -15,7 +15,7 @@ export default function EcosystemHero() {
   }, [])
 
   return (
-    <section style={{
+    <section className="eco-hero-section" style={{
       height: '100vh',
       background: 'var(--black)',
       display: 'flex',

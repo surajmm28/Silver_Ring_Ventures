@@ -67,7 +67,7 @@ export default function UnitList() {
             </div>
 
             {/* 2-col content */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, marginBottom: 60 }}>
+            <div className="unit-content-grid">
               <div>
                 <div style={{
                   fontFamily: "'Barlow', sans-serif",
@@ -129,7 +129,7 @@ export default function UnitList() {
               }}>
                 THE {unit.name.toUpperCase()} ADVANTAGE
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 40 }}>
+              <div className="unit-advantages-grid">
                 {unit.advantages.map((adv, ai) => (
                   <div key={ai} style={{ borderTop: '0.5px solid var(--faint)', paddingTop: 24 }}>
                     <div style={{

@@ -29,6 +29,7 @@ export default function EcosystemPreview() {
   return (
     <section
       ref={sectionRef}
+      className="eco-preview-section"
       style={{ background: 'var(--deep)', padding: '140px 60px' }}
     >
       <div style={{ maxWidth: 900, marginBottom: 60 }}>
@@ -83,7 +84,7 @@ export default function EcosystemPreview() {
             }}>
               {unit.name}
             </div>
-            <div style={{
+            <div className="eco-row-tagline" style={{
               fontFamily: "'Barlow', sans-serif",
               fontWeight: 300,
               fontSize: 14,
@@ -92,7 +93,7 @@ export default function EcosystemPreview() {
             }}>
               {unit.tagline}
             </div>
-            <div style={{ color: 'var(--gold)', fontSize: 18 }}>→</div>
+            <div className="eco-row-arrow" style={{ color: 'var(--gold)', fontSize: 18 }}>→</div>
           </div>
         ))}
       </div>

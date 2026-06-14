@@ -141,7 +141,7 @@ export default function Lifecycle() {
               pointerEvents: 'none',
             }} />
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center', position: 'relative', zIndex: 1 }}>
+            <div className="lc-content-grid">
               {/* Left */}
               <div>
                 <div

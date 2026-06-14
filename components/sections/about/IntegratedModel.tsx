@@ -55,7 +55,7 @@ export default function IntegratedModel() {
   }
 
   return (
-    <section ref={sectionRef} style={{ background: 'var(--black)', padding: '120px 60px' }}>
+    <section ref={sectionRef} className="integrated-section" style={{ background: 'var(--black)', padding: '120px 60px' }}>
       <SectionTag label="02  THE INTEGRATED MODEL" />
       <div style={{
         fontFamily: "'Barlow Condensed', sans-serif",
@@ -82,7 +82,7 @@ export default function IntegratedModel() {
       </div>
 
       {/* Network diagram */}
-      <div style={{ position: 'relative', width: '100%', maxWidth: 700, margin: '0 auto', height: 500 }}>
+      <div className="network-diagram" style={{ position: 'relative', width: '100%', maxWidth: 700, margin: '0 auto', height: 500 }}>
         {/* SVG connections */}
         <svg
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible' }}

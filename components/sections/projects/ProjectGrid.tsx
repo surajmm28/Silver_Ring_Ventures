@@ -79,7 +79,7 @@ export default function ProjectGrid() {
 
   return (
     <>
-      <section ref={sectionRef} style={{ background: 'var(--black)', padding: '0 60px 140px' }}>
+      <section ref={sectionRef} className="pgrid-section" style={{ background: 'var(--black)', padding: '0 60px 140px' }}>
         {/* Filter bar */}
         <div style={{
           display: 'flex',
@@ -114,7 +114,7 @@ export default function ProjectGrid() {
         </div>
 
         {/* Masonry-like 3-column grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1 }}>
+        <div className="pgrid-grid" style={{ gap: 1 }}>
           {filtered.map((project, i) => (
             <div
               key={project.id}
@@ -193,7 +193,7 @@ export default function ProjectGrid() {
       </section>
 
       {/* CTA Banner */}
-      <section style={{
+      <section className="pgrid-cta-section" style={{
         background: 'var(--deep)',
         padding: '100px 60px',
         borderTop: '0.5px solid var(--faint)',

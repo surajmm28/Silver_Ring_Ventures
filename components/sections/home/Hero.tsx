@@ -218,6 +218,7 @@ export default function Hero() {
           {/* Meta */}
           <div
             ref={metaRef}
+            className="hero-meta"
             style={{
               display: 'flex',
               gap: 60,
@@ -248,7 +249,7 @@ export default function Hero() {
           />
 
           {/* CTAs */}
-          <div ref={ctasRef} style={{ display: 'flex', gap: 48, opacity: 0 }}>
+          <div ref={ctasRef} className="hero-ctas" style={{ display: 'flex', gap: 48, opacity: 0 }}>
             <a href="/projects" className="btn-text" data-cursor="cta">
               EXPLORE OUR WORK →
             </a>

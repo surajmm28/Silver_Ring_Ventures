@@ -15,12 +15,9 @@ export default function MapEmbed() {
       </div>
 
       {/* Office info below map */}
-      <div style={{
+      <div className="map-info-grid" style={{
         background: 'var(--deep)',
         padding: '60px',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 1,
         borderTop: '0.5px solid var(--faint)',
       }}>
         {[
@@ -37,7 +34,7 @@ export default function MapEmbed() {
             lines: ['Nearest metro: Indiranagar', 'CMH Road, 5 min walk', 'Ample parking available'],
           },
         ].map((col) => (
-          <div key={col.label} style={{ padding: '0 40px' }}>
+          <div key={col.label} className="map-col" style={{ padding: '0 40px' }}>
             <div style={{
               fontFamily: "'Barlow Condensed', sans-serif",
               fontWeight: 600,

@@ -12,7 +12,7 @@ export default function ProjectsHero() {
   }, [])
 
   return (
-    <section style={{
+    <section className="projects-hero-section" style={{
       height: '60vh',
       minHeight: 460,
       background: 'var(--black)',

@@ -46,6 +46,7 @@ export default function VisionMission() {
   return (
     <section
       ref={panelsRef}
+      className="vision-section"
       style={{ background: 'var(--black)', padding: '120px 60px', perspective: '1000px' }}
     >
       {panels.map((panel, i) => (
