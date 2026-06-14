@@ -2,7 +2,12 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['silverringventures.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'silverringventures.com',
+      },
+    ],
     formats: ['image/webp', 'image/avif'],
   },
   // Ensure Three.js works correctly
