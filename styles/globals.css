@@ -1355,7 +1355,14 @@ canvas {
 
   /* Ecosystem / Projects heroes */
   .eco-hero-section {
-    padding: 0 24px !important;
+    padding: 80px 24px !important;
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    min-height: 100vh;
+  }
+  .eco-hero-section > div:last-child {
+    height: 52vw !important;
+    max-height: 360px !important;
   }
   .projects-hero-section {
     padding: 0 24px 48px !important;
