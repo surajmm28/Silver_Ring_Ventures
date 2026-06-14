@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
 
-const EcosystemOrb = dynamic(() => import('@/components/three/EcosystemOrb'), { ssr: false })
+const EcosystemNet = dynamic(() => import('@/components/three/EcosystemNet'), { ssr: false })
 
 const UNIT_LABELS = [
   'Silverring Ventures',
@@ -144,7 +144,7 @@ export default function EcosystemHero() {
           opacity: 0,
         }}
       >
-        <EcosystemOrb />
+        <EcosystemNet />
       </div>
     </section>
   )
