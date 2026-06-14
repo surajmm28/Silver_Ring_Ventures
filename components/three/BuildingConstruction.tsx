@@ -20,8 +20,6 @@ function buildFloor(w: number, h: number, d: number, color: number): THREE.Group
   const geo = new THREE.BoxGeometry(w, h, d)
   geo.translate(0, h / 2, 0)
   const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0.03 }))
-  mesh.castShadow = true
-  mesh.receiveShadow = true
   group.add(mesh)
   const eGeo = new THREE.BoxGeometry(w + 0.05, h + 0.05, d + 0.05)
   eGeo.translate(0, h / 2, 0)
@@ -51,8 +49,6 @@ export default function BuildingConstruction() {
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.setSize(canvas.clientWidth, canvas.clientHeight, false)
-    renderer.shadowMap.enabled = true
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap
     renderer.setClearColor(0x000000, 0)
 
     const scene  = new THREE.Scene()
@@ -64,27 +60,18 @@ export default function BuildingConstruction() {
     scene.add(new THREE.AmbientLight(0xffffff, 0.65))
     const sun = new THREE.DirectionalLight(0xfff8ee, 1.8)
     sun.position.set(12, 22, 10)
-    sun.castShadow = true
-    sun.shadow.mapSize.set(1024, 1024)
-    sun.shadow.camera.near   = 0.5
-    sun.shadow.camera.far    = 60
-    sun.shadow.camera.left   = -14
-    sun.shadow.camera.right  = 14
-    sun.shadow.camera.top    = 16
-    sun.shadow.camera.bottom = -8
     scene.add(sun)
     const rim = new THREE.DirectionalLight(0xc4973d, 0.25)
     rim.position.set(-10, 5, -8)
     scene.add(rim)
 
     // Ground
-    scene.add(Object.assign(
-      new THREE.Mesh(
-        new THREE.PlaneGeometry(32, 24),
-        new THREE.MeshStandardMaterial({ color: 0x1a1a12, roughness: 0.98 })
-      ),
-      { rotation: new THREE.Euler(-Math.PI / 2, 0, 0), receiveShadow: true }
-    ))
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(32, 24),
+      new THREE.MeshStandardMaterial({ color: 0x1a1a12, roughness: 0.98 })
+    )
+    ground.rotation.x = -Math.PI / 2
+    scene.add(ground)
 
     // Plot boundary
     const corners: [number, number, number][] = [
@@ -164,31 +151,37 @@ export default function BuildingConstruction() {
 
     // ── Animate ───────────────────────────────────────────────────────
     let rafId: number
+    let stopped = false
     const animate = () => {
+      if (stopped) return
       rafId = requestAnimationFrame(animate)
-      const p = progressRef.current
+      try {
+        const p = progressRef.current
 
-      foundation.scale.y = clamp01((p - 0.12) / 0.18)
+        foundation.scale.y = clamp01((p - 0.12) / 0.18)
 
-      const gfP = clamp01((p - 0.30) / 0.22)
-      gFloor.scale.y = gfP
-      gDiv.scale.y   = gfP
+        const gfP = clamp01((p - 0.30) / 0.22)
+        gFloor.scale.y = gfP
+        gDiv.scale.y   = gfP
 
-      const f1P = clamp01((p - 0.52) / 0.22)
-      floor1.scale.y = f1P
-      f1Div.scale.y  = f1P
+        const f1P = clamp01((p - 0.52) / 0.22)
+        floor1.scale.y = f1P
+        f1Div.scale.y  = f1P
 
-      floor2.scale.y = clamp01((p - 0.74) / 0.16)
-      roof.scale.y   = clamp01((p - 0.90) / 0.10)
+        floor2.scale.y = clamp01((p - 0.74) / 0.16)
+        roof.scale.y   = clamp01((p - 0.90) / 0.10)
 
-      setStage(
-        p < 0.12 ? 0 :
-        p < 0.30 ? 1 :
-        p < 0.52 ? 2 :
-        p < 0.74 ? 3 : 4
-      )
+        setStage(
+          p < 0.12 ? 0 :
+          p < 0.30 ? 1 :
+          p < 0.52 ? 2 :
+          p < 0.74 ? 3 : 4
+        )
 
-      renderer.render(scene, camera)
+        renderer.render(scene, camera)
+      } catch {
+        stopped = true
+      }
     }
     animate()
 
@@ -203,10 +196,11 @@ export default function BuildingConstruction() {
     window.addEventListener('resize', onResize)
 
     return () => {
+      stopped = true
       cancelAnimationFrame(rafId)
       window.removeEventListener('resize', onResize)
-      ctx.revert()
-      renderer.dispose()
+      try { ctx.revert() } catch { /* ignore */ }
+      try { renderer.dispose() } catch { /* ignore */ }
     }
   }, [])
 

@@ -131,34 +131,40 @@ export default function EcosystemOrb() {
     let rafId: number
     let t = 0
     let lastTs = performance.now()
+    let stopped = false
 
     const animate = () => {
+      if (stopped) return
       rafId = requestAnimationFrame(animate)
-      const now = performance.now()
-      const dt = Math.min((now - lastTs) * 0.001, 0.05)
-      t += dt
-      lastTs = now
+      try {
+        const now = performance.now()
+        const dt = Math.min((now - lastTs) * 0.001, 0.05)
+        t += dt
+        lastTs = now
 
-      const easeF = 1 - Math.exp(-8 * dt)
-      pivot.rotation.x += (targetTiltX - pivot.rotation.x) * easeF
-      pivot.rotation.y += (targetTiltY - pivot.rotation.y) * easeF
+        const easeF = 1 - Math.exp(-8 * dt)
+        pivot.rotation.x += (targetTiltX - pivot.rotation.x) * easeF
+        pivot.rotation.y += (targetTiltY - pivot.rotation.y) * easeF
 
-      const pulse = 1 + Math.sin(t * 2.4) * 0.055
-      hub.scale.setScalar(pulse)
-      hubRing.rotation.z = t * 0.5
-      hubRing2.rotation.z = -t * 0.3
-      orbitRing.rotation.z = t * 0.09
+        const pulse = 1 + Math.sin(t * 2.4) * 0.055
+        hub.scale.setScalar(pulse)
+        hubRing.rotation.z = t * 0.5
+        hubRing2.rotation.z = -t * 0.3
+        orbitRing.rotation.z = t * 0.09
 
-      for (let i = 0; i < 5; i++) {
-        const target = i === hoveredIdx ? 1.85 : 1 + Math.sin(t * 1.6 + i * 1.26) * 0.07
-        nodeScales[i] += (target - nodeScales[i]) * easeF
-        nodeMeshes[i].scale.setScalar(nodeScales[i])
-        haloMeshes[i].scale.setScalar(nodeScales[i]);
-        (nodeMeshes[i].material as THREE.MeshBasicMaterial).opacity = i === hoveredIdx ? 1 : 0.82
+        for (let i = 0; i < 5; i++) {
+          const target = i === hoveredIdx ? 1.85 : 1 + Math.sin(t * 1.6 + i * 1.26) * 0.07
+          nodeScales[i] += (target - nodeScales[i]) * easeF
+          nodeMeshes[i].scale.setScalar(nodeScales[i])
+          haloMeshes[i].scale.setScalar(nodeScales[i]);
+          (nodeMeshes[i].material as THREE.MeshBasicMaterial).opacity = i === hoveredIdx ? 1 : 0.82
+        }
+
+        particles.rotation.z = t * 0.04
+        renderer.render(scene, camera)
+      } catch {
+        stopped = true
       }
-
-      particles.rotation.z = t * 0.04
-      renderer.render(scene, camera)
     }
     animate()
 
@@ -173,11 +179,12 @@ export default function EcosystemOrb() {
     window.addEventListener('resize', onResize)
 
     return () => {
+      stopped = true
       cancelAnimationFrame(rafId)
       canvas.removeEventListener('mousemove', onMouseMove)
       canvas.removeEventListener('mouseleave', onMouseLeave)
       window.removeEventListener('resize', onResize)
-      renderer.dispose()
+      try { renderer.dispose() } catch { /* ignore */ }
     }
   }, [])
 
