@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
-import ProjectsHero from '@/components/sections/projects/ProjectsHero'
 import ProjectGrid from '@/components/sections/projects/ProjectGrid'
 
 const BuildingConstruction = dynamic(
@@ -17,7 +16,6 @@ export const metadata: Metadata = {
 export default function ProjectsPage() {
   return (
     <>
-      <ProjectsHero />
       <BuildingConstruction />
       <ProjectGrid />
     </>

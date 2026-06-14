@@ -15,7 +15,8 @@ export default function EcosystemOrb() {
     // ── Renderer (pass existing canvas element — no appendChild) ────
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight)
+    // false = don't override canvas CSS width/height with px values
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight, false)
     renderer.setClearColor(0x000000, 0)
 
     const scene = new THREE.Scene()
@@ -167,7 +168,7 @@ export default function EcosystemOrb() {
       if (!w || !h) return
       camera.aspect = w / h
       camera.updateProjectionMatrix()
-      renderer.setSize(w, h)
+      renderer.setSize(w, h, false)
     }
     window.addEventListener('resize', onResize)
 

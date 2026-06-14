@@ -9,7 +9,10 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
   useEffect(() => {
     const lenis = new Lenis(createLenisConfig())
 
-    lenis.on('scroll', ScrollTrigger.update)
+    // Pass no arguments — if the Lenis scroll event object is passed as the
+    // first argument GSAP treats it as reset=true and recalculates all
+    // trigger positions on every frame, which breaks pinned sections.
+    lenis.on('scroll', () => ScrollTrigger.update())
 
     // Store ref so we can remove it on cleanup — not doing this causes a new
     // ticker callback to accumulate on every navigation, calling a destroyed
