@@ -3,12 +3,12 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 
-// Evenly-distributed points on a sphere via the Fibonacci / golden-angle spiral
+// Uniform distribution of points on a sphere via the Fibonacci / golden-angle spiral
 function fibonacciSphere(n: number, radius: number): Float32Array {
   const buf = new Float32Array(n * 3)
   const phi = Math.PI * (3 - Math.sqrt(5)) // golden angle ≈ 2.399 rad
   for (let i = 0; i < n; i++) {
-    const y     = 1 - (i / (n - 1)) * 2         // 1 → -1
+    const y     = 1 - (i / (n - 1)) * 2
     const r     = Math.sqrt(1 - y * y)
     const theta = phi * i
     buf[i * 3]     = Math.cos(theta) * r * radius
@@ -18,51 +18,39 @@ function fibonacciSphere(n: number, radius: number): Float32Array {
   return buf
 }
 
-// ── Shaders (WebGL2 / GLSL3) ─────────────────────────────────────────────────
-// RawShaderMaterial so we control every line — no Three.js injections.
+// ── ShaderMaterial shaders (GLSL1 syntax) ────────────────────────────────────
+// ShaderMaterial (NOT RawShaderMaterial) — Three.js automatically prepends all
+// built-in uniforms (modelMatrix, modelViewMatrix, projectionMatrix, etc.) and
+// handles the WebGL1/2 GLSL conversion. Do NOT declare those builtins here.
 
 const VERT = /* glsl */`
-  #version 300 es
-  precision highp float;
-
-  in  vec3  position;
-  uniform mat4  modelMatrix;
-  uniform mat4  modelViewMatrix;
-  uniform mat4  projectionMatrix;
   uniform float uDPR;
-
-  out float vFacing;
+  varying float vFacing;
 
   void main() {
-    // World-space outward normal of this surface point
-    vec3 wNorm = normalize((modelMatrix * vec4(normalize(position), 0.0)).xyz);
-    // Camera looks along +Z; dot with (0,0,1) = wNorm.z
-    vFacing    = clamp(wNorm.z * 0.5 + 0.5, 0.0, 1.0);
+    // World-space outward normal → how directly this point faces the camera (+Z)
+    vec3 wNorm   = normalize((modelMatrix * vec4(normalize(position), 0.0)).xyz);
+    vFacing      = clamp(wNorm.z * 0.5 + 0.5, 0.0, 1.0);
 
-    vec4 mv    = modelViewMatrix * vec4(position, 1.0);
-    // Front dots bigger, back dots smaller — gives the sphere a 3-D shell feel
+    vec4 mv      = modelViewMatrix * vec4(position, 1.0);
+    // Front dots are bigger; back dots are smaller — gives the sphere 3D depth
     gl_PointSize = mix(1.2, 4.8, vFacing) * uDPR;
     gl_Position  = projectionMatrix * mv;
   }
 `
 
 const FRAG = /* glsl */`
-  #version 300 es
-  precision highp float;
-
-  in  float vFacing;
   uniform vec3  uColor;
   uniform float uMaxAlpha;
-
-  out vec4 outColor;
+  varying float vFacing;
 
   void main() {
-    // Circular dot — discard the square corners
+    // Discard the square corners → circular dot
     float d      = length(gl_PointCoord - vec2(0.5));
     if (d > 0.5) discard;
     float circle = 1.0 - smoothstep(0.38, 0.5, d);
     float alpha  = mix(0.04, uMaxAlpha, vFacing) * circle;
-    outColor     = vec4(uColor, alpha);
+    gl_FragColor = vec4(uColor, alpha);
   }
 `
 
@@ -70,7 +58,7 @@ function makeLayer(n: number, radius: number, maxAlpha: number, dpr: number): TH
   const geo = new THREE.BufferGeometry()
   geo.setAttribute('position', new THREE.BufferAttribute(fibonacciSphere(n, radius), 3))
 
-  const mat = new THREE.RawShaderMaterial({
+  const mat = new THREE.ShaderMaterial({
     uniforms: {
       uColor:    { value: new THREE.Color(0xc4973d) },
       uDPR:      { value: dpr },
@@ -103,22 +91,21 @@ export default function EcosystemSphere() {
     const camera = new THREE.PerspectiveCamera(42, canvas.clientWidth / canvas.clientHeight, 0.1, 100)
     camera.position.z = 7.5
 
-    // ── Sphere layers ─────────────────────────────────────────────────
+    // ── Sphere layers inside a single pivot ───────────────────────────
     const pivot = new THREE.Group()
     scene.add(pivot)
 
-    // Outer shell: 900 dots, full brightness at front
+    // Outer shell: 900 dots at full brightness when facing camera
     const outer = makeLayer(900, 2.0, 0.92, dpr)
-    // Inner core: 260 dots, dimmer — gives depth through the surface
+    // Inner core: 260 dimmer dots visible through the surface → depth
     const inner = makeLayer(260, 1.3, 0.28, dpr)
     pivot.add(outer)
     pivot.add(inner)
 
-    // ── Floating particle cloud (outside pivot, moves slowly) ─────────
+    // ── Floating cloud outside the pivot (moves independently) ────────
     const CLOUD_N  = 110
     const cloudBuf = new Float32Array(CLOUD_N * 3)
     for (let i = 0; i < CLOUD_N; i++) {
-      // Uniform distribution in a shell 2.5 → 4.0 units from center
       const r     = 2.5 + Math.random() * 1.5
       const theta = Math.random() * Math.PI * 2
       const phi   = Math.acos(2 * Math.random() - 1)
@@ -130,7 +117,7 @@ export default function EcosystemSphere() {
     cloudGeo.setAttribute('position', new THREE.BufferAttribute(cloudBuf, 3))
     const cloud = new THREE.Points(cloudGeo, new THREE.PointsMaterial({
       color: 0xc4973d, size: 0.022,
-      transparent: true, opacity: 0.2,
+      transparent: true, opacity: 0.22,
       depthWrite: false, blending: THREE.AdditiveBlending,
     }))
     scene.add(cloud)
@@ -195,16 +182,11 @@ export default function EcosystemSphere() {
         const dt  = Math.min((now - lastTs) * 0.001, 0.05)
         lastTs = now
 
-        if (isDragging) {
-          // No auto-rotation while the user is holding
-        } else {
-          // Inertia decay
+        if (!isDragging) {
           velX *= 0.94; velY *= 0.94
           pivot.rotation.x  = Math.max(-1.1, Math.min(1.1, pivot.rotation.x + velX))
-          pivot.rotation.y += velY
-          // Gentle auto-spin
-          pivot.rotation.y += dt * 0.08
-          // Inner core counter-drifts for a subtle parallax
+          pivot.rotation.y += velY + dt * 0.08
+          // Inner core counter-drifts for a subtle parallax through the surface
           inner.rotation.y -= dt * 0.038
         }
 
@@ -227,6 +209,8 @@ export default function EcosystemSphere() {
       camera.updateProjectionMatrix()
       renderer.setSize(w, h, false)
     }
+    // Call once immediately in case dimensions settled after mount
+    onResize()
     window.addEventListener('resize', onResize)
 
     return () => {
