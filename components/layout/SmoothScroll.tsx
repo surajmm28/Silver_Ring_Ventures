@@ -9,16 +9,17 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
   useEffect(() => {
     const lenis = new Lenis(createLenisConfig())
 
-    // Keep ScrollTrigger in sync with Lenis scroll position
     lenis.on('scroll', ScrollTrigger.update)
 
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000)
-    })
-
+    // Store ref so we can remove it on cleanup — not doing this causes a new
+    // ticker callback to accumulate on every navigation, calling a destroyed
+    // Lenis instance and breaking subsequent page loads.
+    const tick = (time: number) => lenis.raf(time * 1000)
+    gsap.ticker.add(tick)
     gsap.ticker.lagSmoothing(0)
 
     return () => {
+      gsap.ticker.remove(tick)
       lenis.destroy()
     }
   }, [])

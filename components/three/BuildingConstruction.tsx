@@ -2,9 +2,8 @@
 
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
-import { ScrollTrigger } from '@/lib/gsap'
+import { gsap, ScrollTrigger } from '@/lib/gsap'
 
-// ── Stage metadata ─────────────────────────────────────────────────
 const STAGES = [
   { label: 'Empty Plot', desc: 'Bare earth, staked and cleared — the canvas.' },
   { label: 'RCC Foundation', desc: 'Reinforced concrete sunk deep. The anchor.' },
@@ -13,28 +12,25 @@ const STAGES = [
   { label: 'Terrace & Roof', desc: 'Complete. A duplex built to endure.' },
 ]
 
-// Map scroll progress to each stage
-const THRESHOLDS = [0, 0.12, 0.30, 0.52, 0.74, 1.01]
-
 function clamp01(v: number) { return v < 0 ? 0 : v > 1 ? 1 : v }
 
-// Create a floor element: geometry anchored at bottom face (y=0), scale-y from 0→1
-function buildFloor(w: number, h: number, d: number, fillColor: number) {
+// Returns a Group whose bottom face sits at y=0; scale.y 0→1 grows it upward.
+function buildFloor(w: number, h: number, d: number, color: number) {
   const group = new THREE.Group()
 
   const geo = new THREE.BoxGeometry(w, h, d)
   geo.translate(0, h / 2, 0)
-  const mat = new THREE.MeshStandardMaterial({ color: fillColor, roughness: 0.88, metalness: 0.02 })
-  const mesh = new THREE.Mesh(geo, mat)
+  const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color, roughness: 0.88, metalness: 0.02 }))
   mesh.castShadow = true
   mesh.receiveShadow = true
   group.add(mesh)
 
-  // Gold edge outline
   const eGeo = new THREE.BoxGeometry(w + 0.04, h + 0.04, d + 0.04)
   eGeo.translate(0, h / 2, 0)
-  const eMat = new THREE.LineBasicMaterial({ color: 0xc4973d, transparent: true, opacity: 0.28 })
-  group.add(new THREE.LineSegments(new THREE.EdgesGeometry(eGeo), eMat))
+  group.add(new THREE.LineSegments(
+    new THREE.EdgesGeometry(eGeo),
+    new THREE.LineBasicMaterial({ color: 0xc4973d, transparent: true, opacity: 0.28 })
+  ))
 
   group.scale.y = 0
   return group
@@ -42,7 +38,7 @@ function buildFloor(w: number, h: number, d: number, fillColor: number) {
 
 export default function BuildingConstruction() {
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const mountRef = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const stageLabelRef = useRef<HTMLDivElement>(null)
   const stageDescRef = useRef<HTMLDivElement>(null)
   const dotRefs = useRef<(HTMLDivElement | null)[]>([])
@@ -51,25 +47,19 @@ export default function BuildingConstruction() {
 
   useEffect(() => {
     const wrapper = wrapperRef.current
-    const mount = mountRef.current
-    if (!wrapper || !mount) return
+    const canvas = canvasRef.current
+    if (!wrapper || !canvas) return
 
-    let W = mount.clientWidth
-    let H = mount.clientHeight
-
-    // ── Renderer ─────────────────────────────────────────────
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    // ── Renderer ────────────────────────────────────────────────────
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.setSize(W, H)
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight)
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
     renderer.setClearColor(0x000000, 0)
-    mount.appendChild(renderer.domElement)
 
-    // ── Scene ─────────────────────────────────────────────────
     const scene = new THREE.Scene()
-
-    const camera = new THREE.PerspectiveCamera(36, W / H, 0.1, 100)
+    const camera = new THREE.PerspectiveCamera(36, canvas.clientWidth / canvas.clientHeight, 0.1, 100)
     camera.position.set(14, 9, 14)
     camera.lookAt(0, 3, 0)
 
@@ -92,7 +82,7 @@ export default function BuildingConstruction() {
     fill.position.set(-10, 6, -8)
     scene.add(fill)
 
-    // ── Ground ────────────────────────────────────────────────
+    // Ground plane
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(36, 28),
       new THREE.MeshStandardMaterial({ color: 0x111108, roughness: 1 })
@@ -101,163 +91,144 @@ export default function BuildingConstruction() {
     ground.receiveShadow = true
     scene.add(ground)
 
-    // Plot boundary (gold dashed-style rectangle)
-    const plotCorners = [
-      [-6.2, 0.01, -4.5],
-      [6.2, 0.01, -4.5],
-      [6.2, 0.01, 4.5],
-      [-6.2, 0.01, 4.5],
+    // Plot boundary
+    const plotPts = [
+      [-6.2, 0.01, -4.5], [6.2, 0.01, -4.5],
+      [6.2, 0.01, 4.5], [-6.2, 0.01, 4.5],
       [-6.2, 0.01, -4.5],
     ].map(([x, y, z]) => new THREE.Vector3(x, y, z))
-
     scene.add(new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints(plotCorners),
+      new THREE.BufferGeometry().setFromPoints(plotPts),
       new THREE.LineBasicMaterial({ color: 0xc4973d, transparent: true, opacity: 0.55 })
     ))
 
-    // Corner markers
-    for (const pt of plotCorners.slice(0, 4)) {
-      const marker = new THREE.Mesh(
-        new THREE.BoxGeometry(0.12, 0.4, 0.12),
+    // Corner stakes
+    for (let i = 0; i < 4; i++) {
+      const pt = plotPts[i]
+      const stake = new THREE.Mesh(
+        new THREE.BoxGeometry(0.1, 0.35, 0.1),
         new THREE.MeshBasicMaterial({ color: 0xc4973d })
       )
-      marker.position.set(pt.x, 0.2, pt.z)
-      scene.add(marker)
+      stake.position.set(pt.x, 0.18, pt.z)
+      scene.add(stake)
     }
 
-    // ── Building dimensions ────────────────────────────────────
-    const BW = 10.0    // total width (both units)
-    const BD = 7.0     // depth
-    const HF = 0.55    // foundation height
-    const HG = 3.0     // ground floor height
-    const H1 = 3.0     // 1st floor height
-    const H2 = 2.6     // 2nd floor height
-    const HR = 0.38    // roof slab thickness
+    // Building dimensions
+    const BW = 10.0
+    const BD = 7.0
+    const HF = 0.55
+    const HG = 3.0
+    const H1 = 3.0
+    const H2 = 2.6
+    const HR = 0.38
 
-    const C_FOUND = 0x5a5850
-    const C_GFLOOR = 0x8a8880
-    const C_1FLOOR = 0x9e9c94
-    const C_2FLOOR = 0xb2b0a8
-    const C_ROOF = 0x454440
-
-    const foundation = buildFloor(BW, HF, BD, C_FOUND)
+    const foundation = buildFloor(BW, HF, BD, 0x5a5850)
     foundation.position.y = 0
     scene.add(foundation)
 
-    const gFloor = buildFloor(BW, HG, BD, C_GFLOOR)
+    const gFloor = buildFloor(BW, HG, BD, 0x8a8880)
     gFloor.position.y = HF
     scene.add(gFloor)
 
-    // Center dividing beam (ground floor) — sits on top of floor, no overlap
-    const gDiv = new THREE.Mesh(
-      new THREE.BoxGeometry(0.28, HG + 0.06, BD),
-      new THREE.MeshStandardMaterial({ color: 0x6a6860 })
-    )
-    gDiv.geometry.translate(0, (HG + 0.06) / 2, 0)
+    // Center beam (ground floor) — grows in sync with gFloor
+    const gDivGeo = new THREE.BoxGeometry(0.28, HG, BD + 0.1)
+    gDivGeo.translate(0, HG / 2, 0)
+    const gDiv = new THREE.Mesh(gDivGeo, new THREE.MeshStandardMaterial({ color: 0x6a6860 }))
     gDiv.position.y = HF
     gDiv.scale.y = 0
     scene.add(gDiv)
 
-    const floor1 = buildFloor(BW, H1, BD, C_1FLOOR)
+    const floor1 = buildFloor(BW, H1, BD, 0x9e9c94)
     floor1.position.y = HF + HG
     scene.add(floor1)
 
-    const f1Div = new THREE.Mesh(
-      new THREE.BoxGeometry(0.28, H1 + 0.06, BD),
-      new THREE.MeshStandardMaterial({ color: 0x7a7870 })
-    )
-    f1Div.geometry.translate(0, (H1 + 0.06) / 2, 0)
+    const f1DivGeo = new THREE.BoxGeometry(0.28, H1, BD + 0.1)
+    f1DivGeo.translate(0, H1 / 2, 0)
+    const f1Div = new THREE.Mesh(f1DivGeo, new THREE.MeshStandardMaterial({ color: 0x7a7870 }))
     f1Div.position.y = HF + HG
     f1Div.scale.y = 0
     scene.add(f1Div)
 
-    const floor2 = buildFloor(BW, H2, BD, C_2FLOOR)
+    const floor2 = buildFloor(BW, H2, BD, 0xb2b0a8)
     floor2.position.y = HF + HG + H1
     scene.add(floor2)
 
-    const roof = buildFloor(BW + 0.7, HR, BD + 0.7, C_ROOF)
+    const roof = buildFloor(BW + 0.7, HR, BD + 0.7, 0x454440)
     roof.position.y = HF + HG + H1 + H2
     scene.add(roof)
 
-    // ── ScrollTrigger ─────────────────────────────────────────
-    const st = ScrollTrigger.create({
-      trigger: wrapper,
-      start: 'top top',
-      end: 'bottom bottom',
-      onUpdate: (self) => {
-        progressRef.current = self.progress
-      },
+    // ── ScrollTrigger via gsap.context for scoped cleanup ────────────
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: wrapper,
+        start: 'top top',
+        end: 'bottom bottom',
+        onUpdate: (self) => { progressRef.current = self.progress },
+      })
     })
 
-    // ── RAF ───────────────────────────────────────────────────
-    let rafId: number
-
-    const updateStageLabel = (idx: number) => {
+    // ── Update stage indicator (DOM-direct, no React state) ──────────
+    const updateStage = (idx: number) => {
       if (idx === lastStageRef.current) return
       lastStageRef.current = idx
       if (stageLabelRef.current) stageLabelRef.current.textContent = STAGES[idx].label
       if (stageDescRef.current) stageDescRef.current.textContent = STAGES[idx].desc
       dotRefs.current.forEach((dot, i) => {
         if (!dot) return
-        dot.style.background = i <= idx ? 'var(--gold)' : 'rgba(196,151,61,0.25)'
-        dot.style.transform = i === idx ? 'scale(1.4)' : 'scale(1)'
+        dot.style.background = i <= idx ? 'var(--gold)' : 'rgba(196,151,61,0.2)'
+        dot.style.transform = i === idx ? 'scale(1.5)' : 'scale(1)'
       })
     }
 
+    // ── RAF ──────────────────────────────────────────────────────────
+    let rafId: number
     const animate = () => {
       rafId = requestAnimationFrame(animate)
       const p = progressRef.current
 
-      // Foundation: progress 0.12 → 0.30
       foundation.scale.y = clamp01((p - 0.12) / 0.18)
 
-      // Ground floor: 0.30 → 0.52
       const gfP = clamp01((p - 0.30) / 0.22)
       gFloor.scale.y = gfP
       gDiv.scale.y = gfP
 
-      // 1st floor: 0.52 → 0.74
       const f1P = clamp01((p - 0.52) / 0.22)
       floor1.scale.y = f1P
       f1Div.scale.y = f1P
 
-      // 2nd floor: 0.74 → 0.90
       floor2.scale.y = clamp01((p - 0.74) / 0.16)
-
-      // Roof: 0.90 → 1.00
       roof.scale.y = clamp01((p - 0.90) / 0.10)
 
-      // Stage label
-      let stageIdx = 0
-      for (let i = 1; i < THRESHOLDS.length - 1; i++) {
-        if (p >= THRESHOLDS[i]) stageIdx = i
-      }
-      updateStageLabel(stageIdx)
+      const stageIdx =
+        p < 0.12 ? 0 :
+        p < 0.30 ? 1 :
+        p < 0.52 ? 2 :
+        p < 0.74 ? 3 : 4
 
+      updateStage(stageIdx)
       renderer.render(scene, camera)
     }
     animate()
 
     const onResize = () => {
-      W = mount.clientWidth
-      H = mount.clientHeight
-      camera.aspect = W / H
+      const w = canvas.clientWidth
+      const h = canvas.clientHeight
+      if (!w || !h) return
+      camera.aspect = w / h
       camera.updateProjectionMatrix()
-      renderer.setSize(W, H)
+      renderer.setSize(w, h)
     }
     window.addEventListener('resize', onResize)
 
     return () => {
       cancelAnimationFrame(rafId)
       window.removeEventListener('resize', onResize)
-      st.kill()
+      ctx.revert()    // kills the ScrollTrigger cleanly
       renderer.dispose()
-      if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement)
     }
   }, [])
 
   return (
-    /* Outer wrapper provides scroll space — CSS sticky handles pin */
     <div ref={wrapperRef} style={{ height: '420vh', position: 'relative' }}>
       <div style={{
         position: 'sticky',
@@ -266,19 +237,25 @@ export default function BuildingConstruction() {
         background: 'var(--black)',
         overflow: 'hidden',
       }}>
-        {/* Header */}
+        {/* canvas fills the sticky panel */}
+        <canvas
+          ref={canvasRef}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }}
+        />
+
+        {/* Header overlay */}
         <div style={{
           position: 'absolute',
           top: 60,
           left: 60,
-          right: '50%',
+          right: '52%',
           zIndex: 10,
           pointerEvents: 'none',
         }}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
             fontWeight: 800,
-            fontSize: 'clamp(26px, 3.5vw, 48px)',
+            fontSize: 'clamp(24px, 3vw, 46px)',
             textTransform: 'uppercase',
             letterSpacing: '-0.01em',
             color: 'var(--white)',
@@ -299,10 +276,7 @@ export default function BuildingConstruction() {
           </div>
         </div>
 
-        {/* Three.js canvas */}
-        <div ref={mountRef} style={{ width: '100%', height: '100%' }} />
-
-        {/* Stage info — bottom left */}
+        {/* Stage label — bottom left */}
         <div style={{
           position: 'absolute',
           bottom: 60,
@@ -315,11 +289,10 @@ export default function BuildingConstruction() {
             style={{
               fontFamily: "'Barlow Condensed', sans-serif",
               fontWeight: 700,
-              fontSize: 'clamp(22px, 2.5vw, 34px)',
+              fontSize: 'clamp(20px, 2.5vw, 32px)',
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
               color: 'var(--gold)',
-              transition: 'opacity 0.3s',
             }}
           >
             Empty Plot
@@ -330,10 +303,9 @@ export default function BuildingConstruction() {
               marginTop: 6,
               fontFamily: "'Barlow', sans-serif",
               fontWeight: 300,
-              fontSize: 14,
+              fontSize: 13,
               color: 'var(--muted)',
-              maxWidth: 320,
-              transition: 'opacity 0.3s',
+              maxWidth: 300,
             }}
           >
             Bare earth, staked and cleared — the canvas.
@@ -360,7 +332,7 @@ export default function BuildingConstruction() {
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
                 color: 'var(--muted)',
-                opacity: 0.6,
+                opacity: 0.55,
               }}>
                 {s.label}
               </span>
@@ -370,7 +342,7 @@ export default function BuildingConstruction() {
                   width: 7,
                   height: 7,
                   borderRadius: '50%',
-                  background: i === 0 ? 'var(--gold)' : 'rgba(196,151,61,0.25)',
+                  background: i === 0 ? 'var(--gold)' : 'rgba(196,151,61,0.2)',
                   transition: 'background 0.35s, transform 0.35s',
                   flexShrink: 0,
                 }}

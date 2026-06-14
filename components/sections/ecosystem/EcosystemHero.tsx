@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { gsap } from '@/lib/gsap'
+import { gsap, ScrollTrigger } from '@/lib/gsap'
 
 const EcosystemOrb = dynamic(() => import('@/components/three/EcosystemOrb'), { ssr: false })
 
@@ -26,7 +26,15 @@ export default function EcosystemHero() {
     tl.fromTo(subRef.current, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.55')
     tl.fromTo(tagsRef.current, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.65, ease: 'power3.out' }, '-=0.4')
     tl.fromTo(orbRef.current, { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, duration: 1.3, ease: 'power3.out' }, '-=0.9')
-    return () => { tl.kill() }
+
+    // After the dynamic import loads and layout stabilises, recalculate all
+    // ScrollTrigger positions so the Lifecycle horizontal-scroll pin is correct.
+    const refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 1800)
+
+    return () => {
+      tl.kill()
+      clearTimeout(refreshTimer)
+    }
   }, [])
 
   return (
@@ -62,7 +70,7 @@ export default function EcosystemHero() {
         ECO
       </div>
 
-      {/* ── Left: text ── */}
+      {/* Left: text */}
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div ref={headlineRef} style={{ opacity: 0 }}>
           <div style={{
@@ -90,8 +98,8 @@ export default function EcosystemHero() {
             maxWidth: 400,
             margin: 0,
           }}>
-            Five specialist units. One unified strategy. Every discipline works in concert
-            to deliver outcomes that no single firm could achieve alone.
+            Five specialist units. One unified strategy. Every discipline works in
+            concert to deliver outcomes that no single firm could achieve alone.
           </p>
         </div>
 
@@ -116,7 +124,7 @@ export default function EcosystemHero() {
                 height: 5,
                 borderRadius: '50%',
                 background: 'var(--gold)',
-                opacity: 0.6 + i * 0.08,
+                opacity: 0.55 + i * 0.09,
                 flexShrink: 0,
               }} />
               {label}
@@ -125,7 +133,7 @@ export default function EcosystemHero() {
         </div>
       </div>
 
-      {/* ── Right: 3D orb ── */}
+      {/* Right: 3D orb */}
       <div
         ref={orbRef}
         style={{
@@ -134,7 +142,6 @@ export default function EcosystemHero() {
           height: '68vh',
           maxHeight: 580,
           opacity: 0,
-          cursor: 'crosshair',
         }}
       >
         <EcosystemOrb />
