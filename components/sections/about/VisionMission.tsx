@@ -47,15 +47,15 @@ export default function VisionMission() {
     <section
       ref={panelsRef}
       className="vision-section"
-      style={{ background: 'var(--black)', padding: '120px 60px', perspective: '1000px' }}
+      style={{ background: 'var(--black)', padding: '80px 60px', perspective: '1000px' }}
     >
       {panels.map((panel, i) => (
         <div
           key={panel.label}
           className="vmp"
           style={{
-            paddingTop: 80,
-            paddingBottom: 80,
+            paddingTop: 48,
+            paddingBottom: 48,
             borderBottom: '0.5px solid var(--faint)',
             opacity: 0,
           }}

@@ -40,7 +40,7 @@ export default function Values() {
   }
 
   return (
-    <section ref={sectionRef} className="values-section" style={{ background: 'var(--deep)', padding: '120px 60px' }}>
+    <section ref={sectionRef} className="values-section" style={{ background: 'var(--deep)', padding: '80px 60px' }}>
       <SectionTag label="03  OUR VALUES" />
       <div style={{
         fontFamily: "'Barlow Condensed', sans-serif",
@@ -49,7 +49,7 @@ export default function Values() {
         lineHeight: 0.95,
         textTransform: 'uppercase',
         color: 'var(--white)',
-        marginBottom: 80,
+        marginBottom: 48,
       }}>
         WHAT WE <span style={{ color: 'var(--gold)' }}>STAND FOR.</span>
       </div>

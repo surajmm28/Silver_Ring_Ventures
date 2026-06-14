@@ -55,7 +55,7 @@ export default function IntegratedModel() {
   }
 
   return (
-    <section ref={sectionRef} className="integrated-section" style={{ background: 'var(--black)', padding: '120px 60px' }}>
+    <section ref={sectionRef} className="integrated-section" style={{ background: 'var(--black)', padding: '80px 60px' }}>
       <SectionTag label="02  THE INTEGRATED MODEL" />
       <div style={{
         fontFamily: "'Barlow Condensed', sans-serif",
@@ -75,7 +75,7 @@ export default function IntegratedModel() {
         lineHeight: 1.9,
         color: 'var(--muted)',
         maxWidth: 540,
-        marginBottom: 80,
+        marginBottom: 48,
       }}>
         Every unit of Silverring Ventures is built to work in harmony. Hover over a unit
         to see how it connects to every other discipline in the ecosystem.

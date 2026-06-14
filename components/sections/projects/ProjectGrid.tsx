@@ -79,7 +79,7 @@ export default function ProjectGrid() {
 
   return (
     <>
-      <section ref={sectionRef} className="pgrid-section" style={{ background: 'var(--black)', padding: '0 60px 140px' }}>
+      <section ref={sectionRef} className="pgrid-section" style={{ background: 'var(--black)', padding: '0 60px 100px' }}>
         {/* Filter bar */}
         <div style={{
           display: 'flex',
@@ -195,7 +195,7 @@ export default function ProjectGrid() {
       {/* CTA Banner */}
       <section className="pgrid-cta-section" style={{
         background: 'var(--deep)',
-        padding: '100px 60px',
+        padding: '80px 60px',
         borderTop: '0.5px solid var(--faint)',
         display: 'flex',
         flexDirection: 'column',

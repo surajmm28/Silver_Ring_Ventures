@@ -30,9 +30,9 @@ export default function EcosystemPreview() {
     <section
       ref={sectionRef}
       className="eco-preview-section"
-      style={{ background: 'var(--deep)', padding: '140px 60px' }}
+      style={{ background: 'var(--deep)', padding: '100px 60px' }}
     >
-      <div style={{ maxWidth: 900, marginBottom: 60 }}>
+      <div style={{ maxWidth: 900, marginBottom: 40 }}>
         <SectionTag label="02  THE ECOSYSTEM" />
         <div
           style={{

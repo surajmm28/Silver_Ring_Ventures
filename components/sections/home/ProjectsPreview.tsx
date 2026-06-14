@@ -61,7 +61,7 @@ export default function ProjectsPreview() {
     <section
       ref={sectionRef}
       className="projects-preview-section"
-      style={{ background: 'var(--black)', padding: '140px 0 140px 60px' }}
+      style={{ background: 'var(--black)', padding: '100px 0 100px 60px' }}
     >
       <div className="projects-preview-header" style={{ paddingRight: 60, marginBottom: 60 }}>
         <SectionTag label="03  PROJECTS" />

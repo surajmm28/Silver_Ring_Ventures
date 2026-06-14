@@ -97,7 +97,7 @@ export default function Lifecycle() {
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
-              padding: '0 80px',
+              padding: '0 60px',
             }}
           >
             {/* Background step number */}

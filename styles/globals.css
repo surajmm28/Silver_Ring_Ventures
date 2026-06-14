@@ -104,7 +104,7 @@ body {
    SECTION LAYOUT
    ======================== */
 .section-pad {
-  padding: 140px 60px;
+  padding: 100px 60px;
 }
 
 .section-pad-mobile {
@@ -413,7 +413,7 @@ body.cursor-drag #cursor-ring {
 }
 
 .stat-item {
-  padding: 40px 30px;
+  padding: 28px 24px;
   border-right: 0.5px solid var(--faint);
   transition: background 0.3s;
 }
@@ -809,12 +809,12 @@ body.cursor-drag #cursor-ring {
    ECOSYSTEM UNIT PANEL
    ======================== */
 .unit-panel {
-  padding: 100px 60px;
+  padding: 72px 60px;
   border-bottom: 0.5px solid var(--faint);
 }
 
 @media (max-width: 768px) {
-  .unit-panel { padding: 60px 24px; }
+  .unit-panel { padding: 48px 24px; }
 }
 
 /* ========================
@@ -1111,7 +1111,7 @@ canvas {
    ======================== */
 @media (min-width: 1600px) {
   .section-pad {
-    padding: 160px 80px;
+    padding: 120px 80px;
   }
 }
 
@@ -1129,14 +1129,14 @@ canvas {
 .about-preview-grid {
   display: grid;
   grid-template-columns: 55% 45%;
-  gap: 80px;
+  gap: 60px;
   align-items: center;
 }
 
 .why-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 80px;
+  gap: 60px;
   align-items: start;
 }
 
@@ -1168,7 +1168,7 @@ canvas {
 
   /* About preview */
   .about-preview-section {
-    padding: 80px 24px 0 !important;
+    padding: 60px 24px 0 !important;
   }
   .about-preview-grid {
     grid-template-columns: 1fr;
@@ -1192,7 +1192,7 @@ canvas {
 
   /* Why Silverring */
   .why-section {
-    padding: 80px 24px !important;
+    padding: 60px 24px !important;
   }
   .why-grid {
     grid-template-columns: 1fr;
@@ -1201,7 +1201,7 @@ canvas {
 
   /* Ecosystem preview */
   .eco-preview-section {
-    padding: 80px 24px !important;
+    padding: 60px 24px !important;
   }
   .eco-row {
     grid-template-columns: 48px 1fr !important;
@@ -1213,7 +1213,7 @@ canvas {
 
   /* Projects preview */
   .projects-preview-section {
-    padding: 80px 0 80px 24px !important;
+    padding: 60px 0 60px 24px !important;
   }
   .projects-preview-header {
     padding-right: 24px !important;
@@ -1249,12 +1249,12 @@ canvas {
 
   /* Vision / Mission */
   .vision-section {
-    padding: 80px 24px !important;
+    padding: 60px 24px !important;
   }
 
   /* Integrated model */
   .integrated-section {
-    padding: 80px 24px !important;
+    padding: 60px 24px !important;
   }
   .network-diagram {
     height: 300px !important;
@@ -1263,7 +1263,7 @@ canvas {
 
   /* Values */
   .values-section {
-    padding: 80px 24px !important;
+    padding: 60px 24px !important;
   }
   .values-grid {
     grid-template-columns: 1fr;
@@ -1299,7 +1299,7 @@ canvas {
 .lc-content-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 80px;
+  gap: 60px;
   align-items: center;
   position: relative;
   z-index: 1;
@@ -1316,8 +1316,8 @@ canvas {
 .unit-content-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  margin-bottom: 60px;
+  gap: 60px;
+  margin-bottom: 48px;
 }
 
 .unit-advantages-grid {
@@ -1345,7 +1345,7 @@ canvas {
 
   /* FAQ */
   .faq-section {
-    padding: 80px 24px !important;
+    padding: 60px 24px !important;
   }
 
   /* Lifecycle inner content */

@@ -63,7 +63,7 @@ export default function AboutPreview() {
     <section
       ref={sectionRef}
       className="about-preview-section"
-      style={{ background: 'var(--black)', padding: '140px 60px 0' }}
+      style={{ background: 'var(--black)', padding: '100px 60px 0' }}
     >
       <div className="about-preview-grid">
         {/* Left */}
@@ -123,7 +123,7 @@ export default function AboutPreview() {
       </div>
 
       {/* Stats bar */}
-      <div ref={statsRef} className="stats-bar" style={{ marginTop: 100 }}>
+      <div ref={statsRef} className="stats-bar" style={{ marginTop: 60 }}>
         {[
           { number: '5+', label: 'Business Units' },
           { number: '360°', label: 'Integration' },

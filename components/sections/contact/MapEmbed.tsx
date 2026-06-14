@@ -17,7 +17,7 @@ export default function MapEmbed() {
       {/* Office info below map */}
       <div className="map-info-grid" style={{
         background: 'var(--deep)',
-        padding: '60px',
+        padding: '40px 60px',
         borderTop: '0.5px solid var(--faint)',
       }}>
         {[

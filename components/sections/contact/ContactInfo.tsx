@@ -71,7 +71,7 @@ export default function ContactInfo() {
       className="contact-info-panel"
       style={{
         background: 'var(--black)',
-        padding: '80px 60px',
+        padding: '60px 60px',
         height: '100%',
         position: 'relative',
         overflow: 'hidden',

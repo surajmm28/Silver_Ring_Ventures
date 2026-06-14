@@ -58,7 +58,7 @@ export default function FAQ() {
   return (
     <section className="faq-section" style={{
       background: 'var(--black)',
-      padding: '120px 60px',
+      padding: '80px 60px',
       borderTop: '0.5px solid var(--faint)',
     }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>

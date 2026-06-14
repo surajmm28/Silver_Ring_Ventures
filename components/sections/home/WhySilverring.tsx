@@ -30,7 +30,7 @@ export default function WhySilverring() {
     <section
       ref={sectionRef}
       className="why-section"
-      style={{ background: 'var(--deep)', padding: '120px 60px' }}
+      style={{ background: 'var(--deep)', padding: '80px 60px' }}
     >
       <div className="why-grid">
         {/* Left */}

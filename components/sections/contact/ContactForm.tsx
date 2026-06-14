@@ -93,7 +93,7 @@ export default function ContactForm() {
   return (
     <div className="contact-form-panel" style={{
       background: 'var(--deep)',
-      padding: '80px 60px',
+      padding: '60px 60px',
       height: '100%',
     }}>
       <div style={{
