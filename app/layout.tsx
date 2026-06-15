@@ -7,6 +7,7 @@ import Cursor from '@/components/ui/Cursor'
 import Preloader from '@/components/ui/Preloader'
 import PageTransition from '@/components/layout/PageTransition'
 import SmoothScroll from '@/components/layout/SmoothScroll'
+import GyroController from '@/components/ui/GyroController'
 
 const barlow = Barlow({
   subsets: ['latin'],
@@ -59,6 +60,7 @@ export default function RootLayout({
       <body>
         <Preloader />
         <Cursor />
+        <GyroController />
         <Navbar />
         <SmoothScroll>
           <PageTransition>

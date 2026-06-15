@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
+import { gyro } from '@/lib/gyroscope'
 
 const BuildingFallback = dynamic(() => import('@/components/three/BuildingFallback'), {
   ssr: false,
@@ -22,6 +23,10 @@ export default function Hero() {
   const ruleRef = useRef<HTMLDivElement>(null)
   const ctasRef = useRef<HTMLDivElement>(null)
   const progressFillRef = useRef<HTMLDivElement>(null)
+  // Gyroscope parallax layer refs (background only — no conflict with GSAP)
+  const gyroBgRef    = useRef<HTMLDivElement>(null)
+  const gyroGridRef  = useRef<SVGSVGElement>(null)
+  const gyroSkyRef   = useRef<SVGSVGElement>(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -85,7 +90,27 @@ export default function Hero() {
       tl.to(stickyRef.current, { opacity: 0, duration: 0.08 }, 0.92)
     }, sectionRef)
 
-    return () => ctx.revert()
+    // Gyroscopic parallax — background layers only, no GSAP conflict
+    const gyroUnsub = gyro.subscribe(({ x, y }) => {
+      if (!gyro.isActive) return
+      // Deepest background: most movement (parallax feels far away)
+      if (gyroBgRef.current) {
+        gyroBgRef.current.style.transform = `translate3d(${x * 26}px, ${y * 13}px, 0)`
+      }
+      // Mid-depth grid: medium movement
+      if (gyroGridRef.current) {
+        gyroGridRef.current.style.transform = `translate3d(${x * 15}px, ${y * 7}px, 0)`
+      }
+      // Skyline silhouette: closest background layer, least movement
+      if (gyroSkyRef.current) {
+        gyroSkyRef.current.style.transform = `translate3d(${x * 8}px, ${y * 4}px, 0)`
+      }
+    })
+
+    return () => {
+      ctx.revert()
+      gyroUnsub()
+    }
   }, [])
 
   // Split title into individual letter spans
@@ -115,7 +140,7 @@ export default function Hero() {
         }}
       >
         {/* Atmospheric background layers */}
-        <div aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+        <div ref={gyroBgRef} aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', willChange: 'transform' }}>
           {/* Base radial glow — warm amber focal point */}
           <div style={{
             position: 'absolute', inset: 0,
@@ -128,7 +153,8 @@ export default function Hero() {
           }} />
           {/* Perspective floor grid */}
           <svg
-            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, width: '100%', height: '50%', opacity: 0.07 }}
+            ref={gyroGridRef}
+            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, width: '100%', height: '50%', opacity: 0.07, willChange: 'transform' }}
             viewBox="0 0 1440 360" preserveAspectRatio="none"
           >
             {/* Vanishing-point grid lines converging to centre */}
@@ -144,8 +170,9 @@ export default function Hero() {
           </svg>
           {/* Bangalore skyline silhouette */}
           <svg
+            ref={gyroSkyRef}
             aria-hidden="true"
-            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, width: '100%', height: '44%', opacity: 0.055 }}
+            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, width: '100%', height: '44%', opacity: 0.055, willChange: 'transform' }}
             viewBox="0 0 1440 320" preserveAspectRatio="none"
           >
             <path
@@ -193,31 +220,51 @@ export default function Hero() {
           }} />
         </div>
 
+        {/* Film grain texture overlay */}
+        <div
+          aria-hidden="true"
+          className="grain-overlay"
+          style={{ position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none' }}
+        />
+
         {/* Three.js canvas */}
         <div id="hero-canvas-container">
           <BuildingFallback scrollContainer="#hero-section" />
         </div>
 
-        {/* Scroll hint */}
+        {/* Scroll hint — animated line indicator */}
         <div
           ref={scrollHintRef}
           style={{
             position: 'absolute',
-            bottom: 40,
+            bottom: 36,
             left: '50%',
             transform: 'translateX(-50%)',
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontWeight: 600,
-            fontSize: 11,
-            letterSpacing: '0.22em',
-            color: 'var(--gold)',
-            textTransform: 'uppercase',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 10,
             zIndex: 20,
             opacity: 0,
-            whiteSpace: 'nowrap',
           }}
         >
-          SCROLL TO BUILD ↓
+          <span style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontWeight: 600,
+            fontSize: 9,
+            letterSpacing: '0.3em',
+            color: 'var(--gold)',
+            textTransform: 'uppercase',
+          }}>SCROLL</span>
+          <div style={{
+            width: 1,
+            height: 52,
+            background: 'var(--faint)',
+            position: 'relative',
+            overflow: 'hidden',
+          }}>
+            <div className="scroll-caret" />
+          </div>
         </div>
 
         {/* Left vertical line + section number */}

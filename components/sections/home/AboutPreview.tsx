@@ -43,14 +43,25 @@ export default function AboutPreview() {
       // Ring model reveal
       animateMedia(ringRef.current, { trigger: ringRef.current, start: 'top 78%', once: true })
 
-      // Stats
-      const statNums = statsRef.current?.querySelectorAll('[data-count]')
-      statNums?.forEach((el) => {
-        ScrollTrigger.create({
-          trigger: el,
-          start: 'top 85%',
-          once: true,
-          onEnter: () => { el.classList.add('revealed') },
+      // Stats count-up animation
+      const statEls = statsRef.current?.querySelectorAll<HTMLSpanElement>('.stat-number[data-end]')
+      statEls?.forEach((el) => {
+        const end = parseInt(el.getAttribute('data-end') ?? '0', 10)
+        const prefix = el.getAttribute('data-prefix') ?? ''
+        const suffix = el.getAttribute('data-suffix') ?? ''
+        const proxy = { n: 0 }
+        gsap.to(proxy, {
+          n: end,
+          duration: 2.4,
+          ease: 'power2.out',
+          onUpdate: () => {
+            el.textContent = prefix + Math.round(proxy.n) + suffix
+          },
+          scrollTrigger: {
+            trigger: statsRef.current,
+            start: 'top 80%',
+            once: true,
+          },
         })
       })
     }, sectionRef)
@@ -123,13 +134,20 @@ export default function AboutPreview() {
       {/* Stats bar */}
       <div ref={statsRef} className="stats-bar" style={{ marginTop: 60 }}>
         {[
-          { number: '20+', label: 'Years Experience' },
-          { number: '5', label: 'Integrated Business Units' },
-          { number: '6', label: 'Active Project Pipelines' },
-          { number: '₹500Cr+', label: 'Development Pipeline' },
+          { end: 20,  prefix: '',  suffix: '+',    label: 'Years Experience' },
+          { end: 5,   prefix: '',  suffix: '',     label: 'Integrated Business Units' },
+          { end: 6,   prefix: '',  suffix: '',     label: 'Active Project Pipelines' },
+          { end: 500, prefix: '₹', suffix: 'Cr+',  label: 'Development Pipeline' },
         ].map((stat) => (
           <div key={stat.label} className="stat-item">
-            <span className="stat-number" data-count>{stat.number}</span>
+            <span
+              className="stat-number"
+              data-end={stat.end}
+              data-prefix={stat.prefix}
+              data-suffix={stat.suffix}
+            >
+              {stat.prefix}0{stat.suffix}
+            </span>
             <span className="stat-label">{stat.label}</span>
           </div>
         ))}

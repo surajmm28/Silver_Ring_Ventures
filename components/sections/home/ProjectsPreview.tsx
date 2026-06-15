@@ -5,6 +5,7 @@ import { gsap } from '@/lib/gsap'
 import { animateWords } from '@/lib/animations'
 import SectionTag from '@/components/ui/SectionTag'
 import { projects } from '@/lib/data/projects'
+import { gyro } from '@/lib/gyroscope'
 
 const HEADING_WORDS = [
   { text: 'DEVELOPMENTS', gold: false },
@@ -39,7 +40,19 @@ export default function ProjectsPreview() {
         }
       )
     }, sectionRef)
-    return () => ctx.revert()
+    // Gyro tilt — applied to wrapper divs, not GSAP-animated cards
+    const gyroUnsub = gyro.subscribe(({ x, y }) => {
+      if (!gyro.isActive || !stripRef.current) return
+      const wraps = stripRef.current.querySelectorAll<HTMLElement>('.gyro-tilt-wrap')
+      wraps.forEach((el) => {
+        el.style.transform = `perspective(1100px) rotateY(${x * 7}deg) rotateX(${-y * 4}deg)`
+      })
+    })
+
+    return () => {
+      ctx.revert()
+      gyroUnsub()
+    }
   }, [])
 
   // Drag to scroll
@@ -152,12 +165,13 @@ export default function ProjectsPreview() {
         {projects.slice(0, 4).map((project, i) => {
           const loc = locationData[i]
           return (
+            <div key={project.id} className="gyro-tilt-wrap gyro-project-wrap" style={{ flex: '0 0 400px', height: 520 }}>
             <div
-              key={project.id}
               className="project-strip-card"
               style={{
-                flex: '0 0 400px',
-                height: 520,
+                flex: 'none',
+                width: '100%',
+                height: '100%',
                 position: 'relative',
                 overflow: 'hidden',
                 background: loc.gradient,
@@ -165,48 +179,49 @@ export default function ProjectsPreview() {
                 borderRight: '0.5px solid rgba(196,151,61,0.08)',
               }}
             >
-              {/* Accent glow */}
-              <div style={{
-                position: 'absolute', inset: 0,
-                background: `radial-gradient(ellipse 80% 60% at 50% 40%, ${loc.accent} 0%, transparent 70%)`,
-                pointerEvents: 'none',
-              }} />
+              {/* Zoomable background layer — scales on card hover */}
+              <div className="project-card-bg-zoom">
+                {/* Accent glow */}
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  background: `radial-gradient(ellipse 80% 60% at 50% 40%, ${loc.accent} 0%, transparent 70%)`,
+                  pointerEvents: 'none',
+                }} />
 
-              {/* Architectural blueprint SVG */}
-              <svg
-                aria-hidden="true"
-                style={{ position: 'absolute', bottom: 80, left: 0, width: '100%', height: 200, opacity: 0.18 }}
-                viewBox="0 0 220 160" preserveAspectRatio="xMidYMax meet"
-              >
-                <path d={loc.svgPath} stroke="#C4973D" strokeWidth="0.8" fill="none" />
-                {/* Ground line */}
-                <line x1="0" y1="160" x2="220" y2="160" stroke="#C4973D" strokeWidth="0.4" />
-                {/* Grid dots */}
-                {Array.from({ length: 6 }, (_, r) =>
-                  Array.from({ length: 10 }, (_, c) => (
-                    <circle key={`${r}-${c}`} cx={c * 22 + 11} cy={r * 26 + 8} r="0.6" fill="#C4973D" opacity="0.5" />
-                  ))
-                )}
-              </svg>
+                {/* Architectural blueprint SVG */}
+                <svg
+                  aria-hidden="true"
+                  style={{ position: 'absolute', bottom: 80, left: 0, width: '100%', height: 200, opacity: 0.18 }}
+                  viewBox="0 0 220 160" preserveAspectRatio="xMidYMax meet"
+                >
+                  <path d={loc.svgPath} stroke="#C4973D" strokeWidth="0.8" fill="none" />
+                  <line x1="0" y1="160" x2="220" y2="160" stroke="#C4973D" strokeWidth="0.4" />
+                  {Array.from({ length: 6 }, (_, r) =>
+                    Array.from({ length: 10 }, (_, c) => (
+                      <circle key={`${r}-${c}`} cx={c * 22 + 11} cy={r * 26 + 8} r="0.6" fill="#C4973D" opacity="0.5" />
+                    ))
+                  )}
+                </svg>
 
-              {/* Large watermark location name */}
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontWeight: 800,
-                fontSize: 'clamp(44px, 6vw, 64px)',
-                textTransform: 'uppercase',
-                color: 'rgba(196,151,61,0.07)',
-                whiteSpace: 'nowrap',
-                letterSpacing: '-0.01em',
-                userSelect: 'none',
-                pointerEvents: 'none',
-                lineHeight: 1,
-              }}>
-                {loc.area}
+                {/* Large watermark location name */}
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontWeight: 800,
+                  fontSize: 'clamp(44px, 6vw, 64px)',
+                  textTransform: 'uppercase',
+                  color: 'rgba(196,151,61,0.07)',
+                  whiteSpace: 'nowrap',
+                  letterSpacing: '-0.01em',
+                  userSelect: 'none',
+                  pointerEvents: 'none',
+                  lineHeight: 1,
+                }}>
+                  {loc.area}
+                </div>
               </div>
 
               {/* Type + status badges */}
@@ -289,6 +304,7 @@ export default function ProjectsPreview() {
                   ))}
                 </div>
               </div>
+            </div>
             </div>
           )
         })}

@@ -1509,3 +1509,545 @@ canvas {
     border-right: none;
   }
 }
+
+/* ========================
+   FILM GRAIN OVERLAY
+   ======================== */
+.grain-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.032;
+  mix-blend-mode: overlay;
+  animation: grainShift 0.6s steps(2) infinite;
+  will-change: background-position;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain-overlay { animation: none; }
+}
+
+@keyframes grainShift {
+  0%   { background-position: 0 0; }
+  25%  { background-position: 22px -28px; }
+  50%  { background-position: -14px 24px; }
+  75%  { background-position: 28px 12px; }
+  100% { background-position: 0 0; }
+}
+
+/* ========================
+   ANIMATED SCROLL CARET
+   ======================== */
+.scroll-caret {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(to bottom, transparent, var(--gold));
+  animation: scrollCaret 2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-caret { animation: none; top: 25%; opacity: 0.6; }
+}
+
+@keyframes scrollCaret {
+  0%   { top: -100%; opacity: 1; }
+  65%  { opacity: 1; }
+  100% { top: 150%; opacity: 0; }
+}
+
+/* ========================
+   MARQUEE TICKER
+   ======================== */
+.marquee-strip {
+  overflow: hidden;
+  background: var(--gold);
+  padding: 14px 0;
+  position: relative;
+  z-index: 10;
+  border-top: 0.5px solid rgba(196,151,61,0.5);
+  border-bottom: 0.5px solid rgba(196,151,61,0.5);
+}
+
+.marquee-inner {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 38s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-inner { animation: none; }
+}
+
+.marquee-content {
+  flex-shrink: 0;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--black);
+  white-space: nowrap;
+  padding: 0 48px;
+}
+
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ========================
+   MANIFESTO SECTION
+   ======================== */
+.manifesto-section {
+  background: var(--black);
+  padding: 120px 60px;
+  position: relative;
+  overflow: hidden;
+  border-top: 0.5px solid var(--faint);
+}
+
+@media (max-width: 768px) {
+  .manifesto-section {
+    padding: 80px 24px;
+  }
+}
+
+/* ========================
+   ECOSYSTEM CARDS (horizontal)
+   ======================== */
+.eco-card {
+  position: relative;
+  flex: 0 0 300px;
+  height: 440px;
+  background: rgba(255,255,255,0.015);
+  border: 0.5px solid var(--faint);
+  padding: 40px 28px 32px;
+  text-decoration: none;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: none;
+  transition: border-color 0.4s ease;
+}
+
+.eco-card:hover {
+  border-color: rgba(196,151,61,0.28);
+}
+
+.eco-card-watermark {
+  position: absolute;
+  right: 20px;
+  top: 16px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 88px;
+  line-height: 1;
+  color: rgba(196,151,61,0.045);
+  letter-spacing: -0.04em;
+  user-select: none;
+  pointer-events: none;
+}
+
+.eco-card-icon {
+  width: 48px;
+  height: 48px;
+  border: 0.5px solid rgba(196,151,61,0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+  transition: border-color 0.3s ease;
+}
+
+.eco-card:hover .eco-card-icon {
+  border-color: rgba(196,151,61,0.5);
+}
+
+.eco-card-body {
+  flex: 1;
+}
+
+.eco-card-role {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 400;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.eco-card-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: clamp(18px, 1.8vw, 26px);
+  text-transform: uppercase;
+  color: var(--white);
+  line-height: 1.05;
+  margin-bottom: 10px;
+}
+
+.eco-card-tagline {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 300;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.eco-card-reveal {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 28px;
+  background: linear-gradient(to top, rgba(12,12,12,0.97) 0%, rgba(12,12,12,0.88) 65%, transparent 100%);
+  transform: translateY(100%);
+  transition: transform 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none;
+}
+
+.eco-card:hover .eco-card-reveal {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.eco-card-desc {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 300;
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--muted);
+  margin: 0 0 18px;
+}
+
+.eco-card-cta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.eco-card-arrow {
+  display: inline-block;
+  transition: transform 0.3s var(--ease-out);
+}
+
+.eco-card:hover .eco-card-arrow {
+  transform: translateX(6px);
+}
+
+@media (max-width: 768px) {
+  .eco-card {
+    flex: 0 0 250px !important;
+    height: 380px !important;
+    padding: 28px 20px 24px !important;
+  }
+}
+
+/* ========================
+   PROJECT CARD HOVER ZOOM
+   ======================== */
+.project-card-bg-zoom {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform-origin: center;
+  will-change: transform;
+}
+
+.project-strip-card:hover .project-card-bg-zoom {
+  transform: scale(1.07);
+}
+
+/* ========================
+   CTA SECTION
+   ======================== */
+.cta-section {
+  background: var(--deep);
+  padding: 120px 60px;
+  border-top: 0.5px solid var(--faint);
+  position: relative;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .cta-section {
+    padding: 80px 24px;
+  }
+}
+
+/* ========================
+   BTN OUTLINE — fill on hover
+   ======================== */
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 52px;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  cursor: none;
+  transition: color 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.btn-outline::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gold);
+  transform: translateX(-101%);
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 0;
+}
+
+.btn-outline:hover::before {
+  transform: translateX(0);
+}
+
+.btn-outline:hover {
+  color: var(--black);
+}
+
+.btn-outline > span {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-outline-arrow {
+  display: inline-block;
+  transition: transform 0.4s var(--ease-out);
+  position: relative;
+  z-index: 1;
+}
+
+.btn-outline:hover .btn-outline-arrow {
+  transform: translateX(5px);
+}
+
+/* ========================
+   MICRO-INTERACTIONS
+   btn-text gold on hover + arrow nudge
+   ======================== */
+.btn-text:hover {
+  color: var(--gold);
+}
+
+.btn-text::after {
+  background: var(--gold);
+}
+
+/* ========================
+   GYRO TILT WRAPPER
+   (wraps cards so GSAP and gyro don't fight)
+   ======================== */
+.gyro-tilt-wrap {
+  transform-style: preserve-3d;
+  will-change: transform;
+  flex-shrink: 0;
+}
+
+/* ========================
+   GYRO PERMISSION PROMPT
+   ======================== */
+.gyro-prompt {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9000;
+  padding: 0 16px 20px;
+  /* JS animates transform in/out */
+}
+
+.gyro-prompt-inner {
+  background: rgba(14, 12, 8, 0.96);
+  border: 0.5px solid rgba(196,151,61,0.35);
+  border-radius: 2px;
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+}
+
+.gyro-prompt-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.gyro-prompt-icon {
+  color: var(--gold);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.gyro-prompt-text {
+  flex: 1;
+}
+
+.gyro-prompt-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--white);
+  margin: 0 0 5px;
+}
+
+.gyro-prompt-sub {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 300;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+}
+
+.gyro-prompt-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.gyro-btn-allow {
+  flex: 1;
+  padding: 13px 16px;
+  background: var(--gold);
+  color: var(--black);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  border: none;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+
+.gyro-btn-allow:active {
+  background: var(--gold2);
+}
+
+.gyro-btn-skip {
+  padding: 13px 20px;
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  border: 0.5px solid var(--faint);
+  cursor: pointer;
+  transition: border-color 0.25s, color 0.25s;
+}
+
+.gyro-btn-skip:active {
+  border-color: rgba(196,151,61,0.3);
+  color: var(--white);
+}
+
+/* ========================
+   GYRO ACTIVE INDICATOR
+   ======================== */
+.gyro-indicator {
+  position: fixed;
+  bottom: 28px;
+  left: 20px;
+  z-index: 8999;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  background: rgba(12,12,12,0.88);
+  border: 0.5px solid rgba(196,151,61,0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--gold);
+  border-radius: 2px;
+  animation: gyroFadeIn 0.9s 0.4s var(--ease-out) both;
+  pointer-events: none;
+}
+
+.gyro-indicator-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.gyro-indicator-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: gyroPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes gyroFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gyroPulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%       { opacity: 0.3; transform: scale(0.65); }
+}
+
+/* Only show gyro UI on touch devices */
+@media (hover: hover) and (pointer: fine) {
+  .gyro-prompt,
+  .gyro-indicator {
+    display: none !important;
+  }
+}
+
+/* Gyro wrapper sizing — matches card dimensions responsively */
+@media (max-width: 768px) {
+  .eco-card ~ .gyro-tilt-wrap,
+  .gyro-tilt-wrap:has(.eco-card) {
+    flex: 0 0 250px !important;
+    height: 380px !important;
+  }
+}
+
+/* Responsive sizing for gyro wrapper cards */
+@media (max-width: 768px) {
+  .gyro-eco-wrap {
+    flex: 0 0 250px !important;
+    height: 380px !important;
+  }
+  .gyro-project-wrap {
+    flex: 0 0 300px !important;
+    height: 440px !important;
+  }
+}
+@media (max-width: 480px) {
+  .gyro-project-wrap {
+    flex: 0 0 260px !important;
+    height: 400px !important;
+  }
+}
