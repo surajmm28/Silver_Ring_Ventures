@@ -11,6 +11,12 @@ export default function Preloader() {
   const [done, setDone] = useState(false)
 
   useEffect(() => {
+    // Only show on first visit per session
+    if (sessionStorage.getItem('sr_visited')) {
+      setDone(true)
+      return
+    }
+
     const bg = bgRef.current
     const logoWrap = logoWrapRef.current
     const shine = shineRef.current
@@ -78,6 +84,7 @@ export default function Preloader() {
       duration: 1.4,
       onComplete: () => {
         if (navLogo) gsap.set(navLogo, { clearProps: 'opacity' })
+        sessionStorage.setItem('sr_visited', '1')
         setDone(true)
       },
     })

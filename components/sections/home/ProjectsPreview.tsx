@@ -8,6 +8,14 @@ import { projects } from '@/lib/data/projects'
 import { gyro } from '@/lib/gyroscope'
 import TransitionLink from '@/components/ui/TransitionLink'
 
+// Unsplash dark-toned urban/architectural photos — one per Bangalore locality
+const LOCALITY_IMAGES = [
+  'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80&auto=format&fit=crop', // Indiranagar — premium urban night
+  'https://images.unsplash.com/photo-1485627941502-d2e6429a8af0?w=800&q=80&auto=format&fit=crop', // Koramangala — dense commercial
+  'https://images.unsplash.com/photo-1494522358652-f30e61a60313?w=800&q=80&auto=format&fit=crop', // Whitefield — glass/corporate
+  'https://images.unsplash.com/photo-1448630360428-65456885c650?w=800&q=80&auto=format&fit=crop', // Sarjapur — development corridor
+]
+
 const HEADING_WORDS = [
   { text: 'DEVELOPMENTS', gold: false },
   { text: 'THAT', gold: false },
@@ -182,9 +190,22 @@ export default function ProjectsPreview() {
             >
               {/* Zoomable background layer — scales on card hover */}
               <div className="project-card-bg-zoom">
-                {/* Accent glow */}
+                {/* Locality photo */}
                 <div style={{
                   position: 'absolute', inset: 0,
+                  backgroundImage: `url('${LOCALITY_IMAGES[i]}')`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }} />
+                {/* Dark overlay over photo */}
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  background: 'rgba(5,5,5,0.60)',
+                  zIndex: 1,
+                }} />
+                {/* Accent glow */}
+                <div style={{
+                  position: 'absolute', inset: 0, zIndex: 2,
                   background: `radial-gradient(ellipse 80% 60% at 50% 40%, ${loc.accent} 0%, transparent 70%)`,
                   pointerEvents: 'none',
                 }} />
@@ -192,7 +213,7 @@ export default function ProjectsPreview() {
                 {/* Architectural blueprint SVG */}
                 <svg
                   aria-hidden="true"
-                  style={{ position: 'absolute', bottom: 80, left: 0, width: '100%', height: 200, opacity: 0.18 }}
+                  style={{ position: 'absolute', bottom: 80, left: 0, width: '100%', height: 200, opacity: 0.18, zIndex: 3 }}
                   viewBox="0 0 220 160" preserveAspectRatio="xMidYMax meet"
                 >
                   <path d={loc.svgPath} stroke="#C4973D" strokeWidth="0.8" fill="none" />
@@ -214,7 +235,8 @@ export default function ProjectsPreview() {
                   fontWeight: 800,
                   fontSize: 'clamp(44px, 6vw, 64px)',
                   textTransform: 'uppercase',
-                  color: 'rgba(196,151,61,0.07)',
+                  color: 'rgba(196,151,61,0.12)',
+                  zIndex: 3,
                   whiteSpace: 'nowrap',
                   letterSpacing: '-0.01em',
                   userSelect: 'none',

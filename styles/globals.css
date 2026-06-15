@@ -2051,3 +2051,190 @@ canvas {
     height: 400px !important;
   }
 }
+
+/* ========================
+   PREMIUM UPGRADE — POLISH
+   ======================== */
+
+/* Always-on glassmorphism navbar */
+#navbar {
+  background: rgba(0,0,0,0.22) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border-bottom: 0.5px solid rgba(255,255,255,0.05) !important;
+}
+
+#navbar.scrolled {
+  background: rgba(5,5,5,0.88) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border-bottom-color: rgba(237,235,230,0.07) !important;
+}
+
+/* Ken Burns hero background animation */
+@keyframes kenBurns {
+  0%   { transform: scale(1.0) translate(0%, 0%); }
+  50%  { transform: scale(1.07) translate(-0.8%, 0.4%); }
+  100% { transform: scale(1.04) translate(0.8%, -0.4%); }
+}
+
+.hero-bg-ken-burns {
+  animation: kenBurns 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg-ken-burns {
+    animation: none !important;
+    transform: scale(1.04);
+  }
+}
+
+/* Value card premium upgrade — border glow on hover, grain texture */
+.value-card {
+  border: 0.5px solid rgba(237,235,230,0.08) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.value-card:hover {
+  border-color: rgba(196,151,61,0.22) !important;
+  box-shadow: 0 0 32px rgba(196,151,61,0.06), inset 0 0 24px rgba(196,151,61,0.025) !important;
+}
+
+.val-card-grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 150px 150px;
+  opacity: 0.025;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.value-card-icon {
+  width: 44px;
+  height: 44px;
+  border: 0.5px solid rgba(196,151,61,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: var(--gold);
+  transition: border-color 0.35s, background 0.35s;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.value-card:hover .value-card-icon {
+  border-color: rgba(196,151,61,0.5);
+  background: rgba(196,151,61,0.05);
+}
+
+.val-card-num-wrap,
+.val-card-title-wrap,
+.val-card-desc-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ecosystem tab navigation */
+.unit-tabs {
+  display: flex;
+  border-bottom: 0.5px solid var(--faint);
+  background: var(--black);
+  position: sticky;
+  top: 72px;
+  z-index: 40;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.unit-tabs::-webkit-scrollbar { display: none; }
+
+.unit-tab {
+  flex: 1;
+  min-width: 120px;
+  padding: 20px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  cursor: none;
+  text-align: center;
+  transition: color 0.3s, border-color 0.3s, background 0.3s;
+  position: relative;
+}
+
+.unit-tab:hover {
+  color: var(--white);
+  background: rgba(237,235,230,0.02);
+}
+
+.unit-tab.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+.unit-tab-num {
+  display: block;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: inherit;
+  opacity: 0.55;
+  margin-bottom: 5px;
+}
+
+.unit-tab.active .unit-tab-num {
+  opacity: 0.7;
+}
+
+.unit-tab-name {
+  display: block;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: inherit;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .unit-tabs {
+    top: 64px;
+  }
+  .unit-tab {
+    min-width: 100px;
+    padding: 16px 12px;
+  }
+  .unit-tab-name {
+    font-size: 10px;
+  }
+}
+
+/* Project card image overlay */
+.project-card-img-layer {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  transition: transform 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.project-strip-card:hover .project-card-img-layer {
+  transform: scale(1.07);
+}
+
+.project-card-img-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+

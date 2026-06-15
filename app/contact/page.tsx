@@ -13,12 +13,10 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <>
-      {/* Split hero — info left, form right */}
       <div className="contact-split">
         <ContactInfo />
         <ContactForm />
       </div>
-
       <MapEmbed />
       <FAQ />
     </>

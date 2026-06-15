@@ -140,8 +140,24 @@ export default function Hero() {
           background: 'var(--black)',
         }}
       >
+        {/* Real architectural photo background + Ken Burns */}
+        <div aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+          <div
+            className="hero-bg-ken-burns"
+            style={{
+              position: 'absolute',
+              inset: '-6%',
+              backgroundImage: `url('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1920&q=80&auto=format&fit=crop')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center 30%',
+            }}
+          />
+          {/* 65% dark overlay — keeps text fully readable */}
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(5,5,5,0.65)' }} />
+        </div>
+
         {/* Atmospheric background layers */}
-        <div ref={gyroBgRef} aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', willChange: 'transform' }}>
+        <div ref={gyroBgRef} aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none', willChange: 'transform' }}>
           {/* Base radial glow — warm amber focal point */}
           <div style={{
             position: 'absolute', inset: 0,
@@ -225,7 +241,7 @@ export default function Hero() {
         <div
           aria-hidden="true"
           className="grain-overlay"
-          style={{ position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none' }}
+          style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none' }}
         />
 
         {/* Three.js canvas */}

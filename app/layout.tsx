@@ -5,6 +5,7 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import Cursor from '@/components/ui/Cursor'
 import Preloader from '@/components/ui/Preloader'
+import ScrollProgress from '@/components/ui/ScrollProgress'
 import PageTransition from '@/components/layout/PageTransition'
 import SmoothScroll from '@/components/layout/SmoothScroll'
 import GyroController from '@/components/ui/GyroController'
@@ -59,6 +60,7 @@ export default function RootLayout({
       </head>
       <body>
         <Preloader />
+        <ScrollProgress />
         <Cursor />
         <GyroController />
         <Navbar />

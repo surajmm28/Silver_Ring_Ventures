@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import BuildingSection from '@/components/sections/projects/BuildingSection'
 import ProjectGrid from '@/components/sections/projects/ProjectGrid'
+import CTASection from '@/components/sections/home/CTASection'
 
 export const metadata: Metadata = {
   title: 'Projects — Silverring Ventures',
@@ -13,6 +14,7 @@ export default function ProjectsPage() {
     <>
       <BuildingSection />
       <ProjectGrid />
+      <CTASection />
     </>
   )
 }

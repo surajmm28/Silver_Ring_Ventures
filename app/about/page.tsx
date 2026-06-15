@@ -3,6 +3,7 @@ import AboutHero from '@/components/sections/about/AboutHero'
 import VisionMission from '@/components/sections/about/VisionMission'
 import IntegratedModel from '@/components/sections/about/IntegratedModel'
 import Values from '@/components/sections/about/Values'
+import CTASection from '@/components/sections/home/CTASection'
 
 export const metadata: Metadata = {
   title: 'About — Silverring Ventures',
@@ -17,6 +18,7 @@ export default function AboutPage() {
       <VisionMission />
       <IntegratedModel />
       <Values />
+      <CTASection />
     </>
   )
 }
