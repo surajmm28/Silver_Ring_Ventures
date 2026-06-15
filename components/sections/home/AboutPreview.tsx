@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
+import { animateLines, animateMedia } from '@/lib/animations'
 import SectionTag from '@/components/ui/SectionTag'
 
 const RingModel = dynamic(() => import('@/components/three/RingModel'), { ssr: false })
@@ -19,39 +20,37 @@ export default function AboutPreview() {
   const headlineRef = useRef<HTMLDivElement>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
   const statsRef = useRef<HTMLDivElement>(null)
+  const ringRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!sectionRef.current) return
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        headlineRef.current,
-        { opacity: 0, y: 50 },
-        {
-          opacity: 1, y: 0, duration: 1.1,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: headlineRef.current, start: 'top 85%' },
-        }
-      )
+      // Line-by-line heading reveal
+      animateLines(headlineRef.current, {
+        scrollTrigger: { trigger: headlineRef.current, start: 'top 82%', once: true },
+      })
+
       gsap.fromTo(
         bodyRef.current,
-        { opacity: 0, y: 30 },
+        { opacity: 0, y: 24 },
         {
           opacity: 1, y: 0, duration: 0.9,
           ease: 'power3.out',
-          scrollTrigger: { trigger: bodyRef.current, start: 'top 85%' },
+          scrollTrigger: { trigger: bodyRef.current, start: 'top 85%', once: true },
         }
       )
 
-      // Stats count-up
+      // Ring model reveal
+      animateMedia(ringRef.current, { trigger: ringRef.current, start: 'top 78%', once: true })
+
+      // Stats
       const statNums = statsRef.current?.querySelectorAll('[data-count]')
       statNums?.forEach((el) => {
         ScrollTrigger.create({
           trigger: el,
           start: 'top 85%',
           once: true,
-          onEnter: () => {
-            el.classList.add('revealed')
-          },
+          onEnter: () => { el.classList.add('revealed') },
         })
       })
     }, sectionRef)
@@ -81,15 +80,14 @@ export default function AboutPreview() {
               letterSpacing: '-0.01em',
               color: 'var(--white)',
               marginBottom: 36,
-              opacity: 0,
             }}
           >
-            <div>WE DON&apos;T JUST</div>
-            <div>BUILD PROPERTIES.</div>
-            <div>
+            <div className="anim-line" style={{ opacity: 0 }}>WE DON&apos;T JUST</div>
+            <div className="anim-line" style={{ opacity: 0 }}>BUILD PROPERTIES.</div>
+            <div className="anim-line" style={{ opacity: 0 }}>
               WE <span style={{ color: 'var(--gold)' }}>ENGINEER</span>
             </div>
-            <div>ECOSYSTEMS.</div>
+            <div className="anim-line" style={{ opacity: 0 }}>ECOSYSTEMS.</div>
           </div>
 
           <div
@@ -117,7 +115,7 @@ export default function AboutPreview() {
         </div>
 
         {/* Right — Ring */}
-        <div className="about-ring-container" style={{ height: 480, position: 'relative' }}>
+        <div ref={ringRef} className="about-ring-container" style={{ height: 480, position: 'relative' }}>
           <RingModel />
         </div>
       </div>
@@ -125,10 +123,10 @@ export default function AboutPreview() {
       {/* Stats bar */}
       <div ref={statsRef} className="stats-bar" style={{ marginTop: 60 }}>
         {[
-          { number: '5+', label: 'Business Units' },
-          { number: '360°', label: 'Integration' },
-          { number: '1', label: 'Accountable Partner' },
-          { number: '∞', label: 'Potential' },
+          { number: '20+', label: 'Years Experience' },
+          { number: '5', label: 'Integrated Business Units' },
+          { number: '6', label: 'Active Project Pipelines' },
+          { number: '₹500Cr+', label: 'Development Pipeline' },
         ].map((stat) => (
           <div key={stat.label} className="stat-item">
             <span className="stat-number" data-count>{stat.number}</span>

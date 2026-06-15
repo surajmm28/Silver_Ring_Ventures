@@ -1,14 +1,20 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { gsap } from '@/lib/gsap'
+import { animateWords } from '@/lib/animations'
+
+const HEADING_WORDS = [
+  { text: 'DEVELOPMENTS', gold: false },
+  { text: 'THAT', gold: false },
+  { text: '[DEFINE]', gold: true },
+  { text: 'NEIGHBOURHOODS.', gold: false },
+]
 
 export default function ProjectsHero() {
   const headlineRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const tween = gsap.fromTo(headlineRef.current, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out', delay: 0.3 })
-    return () => { tween.kill() }
+    animateWords(headlineRef.current, { delay: 0.3 })
   }, [])
 
   return (
@@ -39,7 +45,7 @@ export default function ProjectsHero() {
         WORK
       </div>
 
-      <div ref={headlineRef} style={{ opacity: 0 }}>
+      <div ref={headlineRef}>
         <div style={{
           fontFamily: "'Barlow Condensed', sans-serif",
           fontWeight: 800,
@@ -49,9 +55,20 @@ export default function ProjectsHero() {
           letterSpacing: '-0.01em',
           color: 'var(--white)',
         }}>
-          DEVELOPMENTS THAT{' '}
-          <span style={{ color: 'var(--gold)' }}>[DEFINE]</span>{' '}
-          NEIGHBOURHOODS.
+          {HEADING_WORDS.map((w, i) => (
+            <span
+              key={i}
+              className="anim-word"
+              style={{
+                display: 'inline-block',
+                color: w.gold ? 'var(--gold)' : 'inherit',
+                marginRight: i < HEADING_WORDS.length - 1 ? '0.22em' : 0,
+                opacity: 0,
+              }}
+            >
+              {w.text}
+            </span>
+          ))}
         </div>
       </div>
     </section>

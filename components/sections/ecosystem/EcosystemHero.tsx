@@ -3,8 +3,17 @@
 import { useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
+import { animateWords, animateMedia } from '@/lib/animations'
 
 const EcosystemSphere = dynamic(() => import('@/components/three/EcosystemSphere'), { ssr: false })
+
+const HEADING_WORDS = [
+  { text: 'THE', gold: false },
+  { text: 'ECOSYSTEM.', gold: false },
+  { text: '[FIVE PILLARS.]', gold: true },
+  { text: 'ONE', gold: false },
+  { text: 'VISION.', gold: false },
+]
 
 const UNIT_LABELS = [
   'Silverring Ventures',
@@ -21,11 +30,11 @@ export default function EcosystemHero() {
   const orbRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const tl = gsap.timeline({ delay: 0.25 })
-    tl.fromTo(headlineRef.current, { opacity: 0, y: 56 }, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out' })
-    tl.fromTo(subRef.current, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.55')
+    animateWords(headlineRef.current, { delay: 0.2 })
+    const tl = gsap.timeline({ delay: 0.55 })
+    tl.fromTo(subRef.current, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.85, ease: 'power3.out' })
     tl.fromTo(tagsRef.current, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.65, ease: 'power3.out' }, '-=0.4')
-    tl.fromTo(orbRef.current, { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, duration: 1.3, ease: 'power3.out' }, '-=0.9')
+    animateMedia(orbRef.current, undefined, { delay: 0.3 })
 
     // After the dynamic import loads and layout stabilises, recalculate all
     // ScrollTrigger positions so the Lifecycle horizontal-scroll pin is correct.
@@ -72,7 +81,7 @@ export default function EcosystemHero() {
 
       {/* Left: text */}
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <div ref={headlineRef} style={{ opacity: 0 }}>
+        <div ref={headlineRef}>
           <div style={{
             fontFamily: "'Barlow Condensed', sans-serif",
             fontWeight: 800,
@@ -82,9 +91,20 @@ export default function EcosystemHero() {
             letterSpacing: '-0.01em',
             color: 'var(--white)',
           }}>
-            THE ECOSYSTEM.{' '}
-            <span style={{ color: 'var(--gold)' }}>[FIVE PILLARS.]</span>{' '}
-            ONE VISION.
+            {HEADING_WORDS.map((w, i) => (
+              <span
+                key={i}
+                className="anim-word"
+                style={{
+                  display: 'inline-block',
+                  color: w.gold ? 'var(--gold)' : 'inherit',
+                  marginRight: i < HEADING_WORDS.length - 1 ? '0.22em' : 0,
+                  opacity: 0,
+                }}
+              >
+                {w.text}
+              </span>
+            ))}
           </div>
         </div>
 
@@ -141,7 +161,6 @@ export default function EcosystemHero() {
           zIndex: 1,
           height: '68vh',
           maxHeight: 580,
-          opacity: 0,
         }}
       >
         <EcosystemSphere />

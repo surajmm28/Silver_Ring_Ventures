@@ -1408,3 +1408,104 @@ canvas {
     grid-template-columns: 1fr;
   }
 }
+
+/* ========================
+   FOUNDER SECTION
+   ======================== */
+.founder-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.founder-credentials {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 0.5px solid var(--faint);
+}
+
+@media (max-width: 1024px) {
+  .founder-grid {
+    grid-template-columns: 1fr 1.2fr;
+    gap: 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .founder-grid {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+  .founder-credentials {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ========================
+   ECO ROW EXPANDED
+   ======================== */
+.eco-row {
+  transition: background 0.25s;
+}
+.eco-row:hover {
+  background: rgba(196,151,61,0.03);
+}
+
+@media (max-width: 1024px) {
+  .eco-row {
+    grid-template-columns: 56px 36px 1fr auto !important;
+  }
+  .eco-row-desc { display: none !important; }
+}
+
+@media (max-width: 768px) {
+  .eco-row {
+    grid-template-columns: 44px 32px 1fr auto !important;
+    gap: 16px !important;
+  }
+  .eco-row-desc { display: none !important; }
+}
+
+/* ========================
+   PROJECT STRIP CARDS
+   ======================== */
+@media (max-width: 768px) {
+  .project-strip-card {
+    flex: 0 0 300px !important;
+    height: 440px !important;
+  }
+  .projects-preview-section {
+    padding: 60px 0 60px 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-strip-card {
+    flex: 0 0 260px !important;
+    height: 400px !important;
+  }
+}
+
+/* ========================
+   HERO ATMOSPHERIC BG
+   ======================== */
+@media (max-width: 768px) {
+  #hero-content { padding: 0 24px !important; }
+}
+
+/* ========================
+   STAT BAR — NEW LAYOUT
+   ======================== */
+@media (max-width: 768px) {
+  .stats-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+  .stat-item:nth-child(2) { border-right: none; }
+  .stat-item:nth-child(3) { border-top: 0.5px solid var(--faint); }
+  .stat-item:nth-child(4) {
+    border-top: 0.5px solid var(--faint);
+    border-right: none;
+  }
+}

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { gsap } from '@/lib/gsap'
+import { animateWords } from '@/lib/animations'
 
 const panels = [
   {
@@ -28,16 +29,21 @@ export default function VisionMission() {
     if (!panelsRef.current) return
     const ctx = gsap.context(() => {
       panelsRef.current!.querySelectorAll('.vmp').forEach((panel) => {
-        gsap.fromTo(
-          panel,
-          { opacity: 0, rotateX: 8, y: 40 },
-          {
-            opacity: 1, rotateX: 0, y: 0,
-            duration: 1.0,
-            ease: 'power3.out',
-            scrollTrigger: { trigger: panel, start: 'top 80%' },
-          }
-        )
+        // Panel label fade
+        const label = panel.querySelector('.vmp-label')
+        if (label) {
+          gsap.fromTo(label, { opacity: 0, x: -16 }, {
+            opacity: 1, x: 0, duration: 0.7, ease: 'power3.out',
+            scrollTrigger: { trigger: panel, start: 'top 82%', once: true },
+          })
+        }
+        // Statement heading: word stagger
+        const statement = panel.querySelector('.vmp-statement')
+        if (statement) {
+          animateWords(statement, {
+            scrollTrigger: { trigger: panel, start: 'top 80%', once: true },
+          })
+        }
       })
     }, panelsRef)
     return () => ctx.revert()
@@ -57,10 +63,9 @@ export default function VisionMission() {
             paddingTop: 48,
             paddingBottom: 48,
             borderBottom: '0.5px solid var(--faint)',
-            opacity: 0,
           }}
         >
-          <div style={{ marginBottom: 24 }}>
+          <div className="vmp-label" style={{ marginBottom: 24, opacity: 0 }}>
             <span style={{
               fontFamily: "'Barlow Condensed', sans-serif",
               fontWeight: 600,
@@ -72,16 +77,31 @@ export default function VisionMission() {
               {String(i + 1).padStart(2, '0')} — {panel.label}
             </span>
           </div>
-          <div style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontWeight: 700,
-            fontSize: 'clamp(24px, 3.5vw, 48px)',
-            lineHeight: 1.1,
-            color: 'var(--white)',
-            maxWidth: 860,
-            marginBottom: 28,
-          }}>
-            {panel.statement}
+          <div
+            className="vmp-statement"
+            style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontWeight: 700,
+              fontSize: 'clamp(24px, 3.5vw, 48px)',
+              lineHeight: 1.1,
+              color: 'var(--white)',
+              maxWidth: 860,
+              marginBottom: 28,
+            }}
+          >
+            {panel.statement.split(' ').map((word, wi) => (
+              <span
+                key={wi}
+                className="anim-word"
+                style={{
+                  display: 'inline-block',
+                  marginRight: wi < panel.statement.split(' ').length - 1 ? '0.22em' : 0,
+                  opacity: 0,
+                }}
+              >
+                {word}
+              </span>
+            ))}
           </div>
           <div style={{
             fontFamily: "'Barlow', sans-serif",

@@ -2,8 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from '@/lib/gsap'
+import { animateWords, animateMedia } from '@/lib/animations'
 import SectionTag from '@/components/ui/SectionTag'
 import { units } from '@/lib/data/units'
+
+const HEADING_WORDS = [
+  { text: 'FIVE', gold: false },
+  { text: 'UNITS.', gold: false },
+  { text: 'ONE', gold: true },
+  { text: 'ENGINE.', gold: false },
+]
 
 const POSITIONS = [
   { x: '50%', y: '10%' },   // Silverring top
@@ -20,12 +28,18 @@ const CONNECTIONS = [
 
 export default function IntegratedModel() {
   const sectionRef = useRef<HTMLDivElement>(null)
+  const headlineRef = useRef<HTMLDivElement>(null)
+  const diagramRef = useRef<HTMLDivElement>(null)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [drawn, setDrawn] = useState(false)
 
   useEffect(() => {
     if (!sectionRef.current) return
     const ctx = gsap.context(() => {
+      animateWords(headlineRef.current, {
+        scrollTrigger: { trigger: headlineRef.current, start: 'top 82%', once: true },
+      })
+      animateMedia(diagramRef.current, { trigger: diagramRef.current, start: 'top 78%', once: true })
       gsap.fromTo(
         '.network-node',
         { opacity: 0, scale: 0.5 },
@@ -57,16 +71,32 @@ export default function IntegratedModel() {
   return (
     <section ref={sectionRef} className="integrated-section" style={{ background: 'var(--black)', padding: '80px 60px' }}>
       <SectionTag label="02  THE INTEGRATED MODEL" />
-      <div style={{
-        fontFamily: "'Barlow Condensed', sans-serif",
-        fontWeight: 800,
-        fontSize: 'clamp(36px, 5vw, 72px)',
-        lineHeight: 0.95,
-        textTransform: 'uppercase',
-        color: 'var(--white)',
-        marginBottom: 16,
-      }}>
-        FIVE UNITS. <span style={{ color: 'var(--gold)' }}>ONE</span> ENGINE.
+      <div
+        ref={headlineRef}
+        style={{
+          fontFamily: "'Barlow Condensed', sans-serif",
+          fontWeight: 800,
+          fontSize: 'clamp(36px, 5vw, 72px)',
+          lineHeight: 0.95,
+          textTransform: 'uppercase',
+          color: 'var(--white)',
+          marginBottom: 16,
+        }}
+      >
+        {HEADING_WORDS.map((w, i) => (
+          <span
+            key={i}
+            className="anim-word"
+            style={{
+              display: 'inline-block',
+              color: w.gold ? 'var(--gold)' : 'inherit',
+              marginRight: i < HEADING_WORDS.length - 1 ? '0.22em' : 0,
+              opacity: 0,
+            }}
+          >
+            {w.text}
+          </span>
+        ))}
       </div>
       <div style={{
         fontFamily: "'Barlow', sans-serif",
@@ -82,7 +112,7 @@ export default function IntegratedModel() {
       </div>
 
       {/* Network diagram */}
-      <div className="network-diagram" style={{ position: 'relative', width: '100%', maxWidth: 700, margin: '0 auto', height: 500 }}>
+      <div ref={diagramRef} className="network-diagram" style={{ position: 'relative', width: '100%', maxWidth: 700, margin: '0 auto', height: 500 }}>
         {/* SVG connections */}
         <svg
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible' }}

@@ -2,16 +2,26 @@
 
 import { useEffect, useRef } from 'react'
 import { gsap } from '@/lib/gsap'
+import { animateWords } from '@/lib/animations'
+
+const HEADING_WORDS = [
+  { text: 'ABOUT', gold: false },
+  { text: '[SILVERRING]', gold: true },
+  { text: 'VENTURES.', gold: false },
+]
 
 export default function AboutHero() {
   const headlineRef = useRef<HTMLDivElement>(null)
   const subRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const tl = gsap.timeline({ delay: 0.3 })
-    tl.fromTo(headlineRef.current, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out' })
-    tl.fromTo(subRef.current, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.5')
-    return () => { tl.kill() }
+    animateWords(headlineRef.current, { delay: 0.25 })
+    const sub = gsap.fromTo(
+      subRef.current,
+      { opacity: 0, y: 24 },
+      { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', delay: 0.65 }
+    )
+    return () => { sub.kill() }
   }, [])
 
   return (
@@ -45,7 +55,7 @@ export default function AboutHero() {
         ABOUT
       </div>
 
-      <div ref={headlineRef} style={{ opacity: 0, maxWidth: 900 }}>
+      <div ref={headlineRef} style={{ maxWidth: 900 }}>
         <div style={{
           fontFamily: "'Barlow Condensed', sans-serif",
           fontWeight: 800,
@@ -55,13 +65,24 @@ export default function AboutHero() {
           letterSpacing: '-0.01em',
           color: 'var(--white)',
         }}>
-          ABOUT{' '}
-          <span style={{ color: 'var(--gold)' }}>[SILVERRING]</span>{' '}
-          VENTURES.
+          {HEADING_WORDS.map((w, i) => (
+            <span
+              key={i}
+              className="anim-word"
+              style={{
+                display: 'inline-block',
+                color: w.gold ? 'var(--gold)' : 'inherit',
+                marginRight: i < HEADING_WORDS.length - 1 ? '0.22em' : 0,
+                opacity: 0,
+              }}
+            >
+              {w.text}
+            </span>
+          ))}
         </div>
       </div>
 
-      <div ref={subRef} style={{ opacity: 0, marginTop: 40, maxWidth: 560 }}>
+      <div ref={subRef} style={{ opacity: 0, marginTop: 40, maxWidth: 560 }} aria-hidden="false">
         <div style={{
           fontFamily: "'Barlow', sans-serif",
           fontWeight: 300,

@@ -2,15 +2,29 @@
 
 import { useEffect, useRef } from 'react'
 import { gsap } from '@/lib/gsap'
+import { animateWords } from '@/lib/animations'
 import SectionTag from '@/components/ui/SectionTag'
 import { values } from '@/lib/data/values'
 
+const HEADING_WORDS = [
+  { text: 'EIGHT', gold: false },
+  { text: 'REASONS', gold: false },
+  { text: 'TO', gold: true },
+  { text: 'CHOOSE', gold: true },
+  { text: 'INTEGRATED', gold: false },
+  { text: 'EXCELLENCE.', gold: false },
+]
+
 export default function WhySilverring() {
   const sectionRef = useRef<HTMLDivElement>(null)
+  const headlineRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!sectionRef.current) return
     const ctx = gsap.context(() => {
+      animateWords(headlineRef.current, {
+        scrollTrigger: { trigger: headlineRef.current, start: 'top 82%', once: true },
+      })
       gsap.fromTo(
         '.value-row',
         { opacity: 0, y: 30 },
@@ -37,6 +51,7 @@ export default function WhySilverring() {
         <div>
           <SectionTag label="04  WHY SILVERRING" />
           <div
+            ref={headlineRef}
             style={{
               fontFamily: "'Barlow Condensed', sans-serif",
               fontWeight: 800,
@@ -46,9 +61,20 @@ export default function WhySilverring() {
               color: 'var(--white)',
             }}
           >
-            EIGHT REASONS{' '}
-            <span style={{ color: 'var(--gold)' }}>TO CHOOSE</span>{' '}
-            INTEGRATED EXCELLENCE.
+            {HEADING_WORDS.map((w, i) => (
+              <span
+                key={i}
+                className="anim-word"
+                style={{
+                  display: 'inline-block',
+                  color: w.gold ? 'var(--gold)' : 'inherit',
+                  marginRight: i < HEADING_WORDS.length - 1 ? '0.22em' : 0,
+                  opacity: 0,
+                }}
+              >
+                {w.text}
+              </span>
+            ))}
           </div>
         </div>
 

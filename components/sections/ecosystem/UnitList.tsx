@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { gsap } from '@/lib/gsap'
+import { animateChars } from '@/lib/animations'
 import { units } from '@/lib/data/units'
 
 export default function UnitList() {
@@ -10,15 +11,22 @@ export default function UnitList() {
   useEffect(() => {
     if (!sectionRef.current) return
     const ctx = gsap.context(() => {
+      // Unit name: char stagger — premium character reveal
+      sectionRef.current!.querySelectorAll('.unit-name-heading').forEach((heading) => {
+        animateChars(heading, {
+          scrollTrigger: { trigger: heading, start: 'top 82%', once: true },
+        })
+      })
+      // Panel content: subtle fade for the rest
       sectionRef.current!.querySelectorAll('.unit-panel-inner').forEach((panel) => {
         gsap.fromTo(
           panel,
-          { opacity: 0, y: 60 },
+          { opacity: 0 },
           {
-            opacity: 1, y: 0,
-            duration: 1.0,
-            ease: 'power3.out',
-            scrollTrigger: { trigger: panel, start: 'top 80%' },
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: panel, start: 'top 82%', once: true },
           }
         )
       })
@@ -54,15 +62,30 @@ export default function UnitList() {
               }}>
                 {unit.role}
               </div>
-              <div style={{
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontWeight: 800,
-                fontSize: 'clamp(40px, 6vw, 88px)',
-                lineHeight: 0.9,
-                textTransform: 'uppercase',
-                color: 'var(--white)',
-              }}>
-                {unit.name}
+              <div
+                className="unit-name-heading"
+                style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontWeight: 800,
+                  fontSize: 'clamp(40px, 6vw, 88px)',
+                  lineHeight: 0.9,
+                  textTransform: 'uppercase',
+                  color: 'var(--white)',
+                }}
+              >
+                {unit.name.split('').map((char, ci) => (
+                  <span
+                    key={ci}
+                    className="anim-char"
+                    style={{
+                      display: 'inline-block',
+                      whiteSpace: char === ' ' ? 'pre' : undefined,
+                      opacity: 0,
+                    }}
+                  >
+                    {char}
+                  </span>
+                ))}
               </div>
             </div>
 

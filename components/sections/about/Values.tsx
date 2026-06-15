@@ -2,15 +2,27 @@
 
 import { useEffect, useRef } from 'react'
 import { gsap } from '@/lib/gsap'
+import { animateWords } from '@/lib/animations'
 import SectionTag from '@/components/ui/SectionTag'
 import { values } from '@/lib/data/values'
 
+const HEADING_WORDS = [
+  { text: 'WHAT', gold: false },
+  { text: 'WE', gold: false },
+  { text: 'STAND', gold: true },
+  { text: 'FOR.', gold: true },
+]
+
 export default function Values() {
   const sectionRef = useRef<HTMLDivElement>(null)
+  const headlineRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!sectionRef.current) return
     const ctx = gsap.context(() => {
+      animateWords(headlineRef.current, {
+        scrollTrigger: { trigger: headlineRef.current, start: 'top 82%', once: true },
+      })
       gsap.fromTo(
         '.val-card',
         { opacity: 0, y: 40 },
@@ -42,16 +54,32 @@ export default function Values() {
   return (
     <section ref={sectionRef} className="values-section" style={{ background: 'var(--deep)', padding: '80px 60px' }}>
       <SectionTag label="03  OUR VALUES" />
-      <div style={{
-        fontFamily: "'Barlow Condensed', sans-serif",
-        fontWeight: 800,
-        fontSize: 'clamp(36px, 5vw, 72px)',
-        lineHeight: 0.95,
-        textTransform: 'uppercase',
-        color: 'var(--white)',
-        marginBottom: 48,
-      }}>
-        WHAT WE <span style={{ color: 'var(--gold)' }}>STAND FOR.</span>
+      <div
+        ref={headlineRef}
+        style={{
+          fontFamily: "'Barlow Condensed', sans-serif",
+          fontWeight: 800,
+          fontSize: 'clamp(36px, 5vw, 72px)',
+          lineHeight: 0.95,
+          textTransform: 'uppercase',
+          color: 'var(--white)',
+          marginBottom: 48,
+        }}
+      >
+        {HEADING_WORDS.map((w, i) => (
+          <span
+            key={i}
+            className="anim-word"
+            style={{
+              display: 'inline-block',
+              color: w.gold ? 'var(--gold)' : 'inherit',
+              marginRight: i < HEADING_WORDS.length - 1 ? '0.22em' : 0,
+              opacity: 0,
+            }}
+          >
+            {w.text}
+          </span>
+        ))}
       </div>
 
       <div className="values-grid">
