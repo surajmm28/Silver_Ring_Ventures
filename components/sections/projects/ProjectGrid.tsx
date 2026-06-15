@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { gsap } from '@/lib/gsap'
 import { projects, type Project, type ProjectType } from '@/lib/data/projects'
 import ProjectModal from './ProjectModal'
+import TransitionLink from '@/components/ui/TransitionLink'
 
 const FILTERS: Array<'All' | ProjectType> = ['All', 'Residential', 'Commercial', 'Land']
 
@@ -213,9 +214,9 @@ export default function ProjectGrid() {
         }}>
           HAVE A SITE IN MIND?
         </div>
-        <a href="/contact" className="btn-gold" data-cursor="cta">
+        <TransitionLink href="/contact" className="btn-gold" data-cursor="cta">
           START A CONVERSATION →
-        </a>
+        </TransitionLink>
       </section>
 
       {/* Modal */}

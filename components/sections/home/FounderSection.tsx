@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { gsap } from '@/lib/gsap'
 import { animateWords, animateMedia } from '@/lib/animations'
 import SectionTag from '@/components/ui/SectionTag'
+import TransitionLink from '@/components/ui/TransitionLink'
 
 const HEADING_WORDS = [
   { text: 'THE', gold: false },
@@ -243,9 +244,9 @@ export default function FounderSection() {
           </div>
 
           <div style={{ marginTop: 40 }}>
-            <a href="/contact" className="btn-text" data-cursor="cta">
+            <TransitionLink href="/contact" className="btn-text" data-cursor="cta">
               PARTNER WITH US →
-            </a>
+            </TransitionLink>
           </div>
         </div>
       </div>

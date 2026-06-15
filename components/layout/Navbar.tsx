@@ -1,21 +1,20 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import TransitionLink from '@/components/ui/TransitionLink'
 
 const navLinks = [
-  { href: '/about', label: 'About' },
+  { href: '/about',     label: 'About'     },
   { href: '/ecosystem', label: 'Ecosystem' },
-  { href: '/projects', label: 'Projects' },
+  { href: '/projects',  label: 'Projects'  },
 ]
 
 export default function Navbar() {
-  const pathname = usePathname()
-  const [scrolled, setScrolled] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
-  const navRef = useRef<HTMLElement>(null)
+  const pathname  = usePathname()
+  const [scrolled,  setScrolled]  = useState(false)
+  const [menuOpen,  setMenuOpen]   = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -23,41 +22,43 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  useEffect(() => {
-    setMenuOpen(false)
-  }, [pathname])
+  // Close mobile menu on navigation
+  useEffect(() => { setMenuOpen(false) }, [pathname])
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [menuOpen])
 
-  // Magnetic effect for Get In Touch button
-  const ctaRef = useRef<HTMLAnchorElement>(null)
-
+  // Magnetic CTA effect — uses e.currentTarget so no ref needed
   const handleCtaMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    const btn = ctaRef.current
-    if (!btn) return
+    const btn  = e.currentTarget
     const rect = btn.getBoundingClientRect()
-    const x = e.clientX - rect.left - rect.width / 2
-    const y = e.clientY - rect.top - rect.height / 2
+    const x = e.clientX - rect.left - rect.width  / 2
+    const y = e.clientY - rect.top  - rect.height / 2
     btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`
   }
 
-  const handleCtaMouseLeave = () => {
-    if (ctaRef.current)
-      ctaRef.current.style.transform = 'translate(0,0)'
+  const handleCtaMouseEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.currentTarget.style.background = 'var(--gold)'
+    e.currentTarget.style.color      = 'var(--black)'
+  }
+
+  const handleCtaMouseLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.currentTarget.style.background = 'transparent'
+    e.currentTarget.style.color      = 'var(--gold)'
+    e.currentTarget.style.transform  = 'translate(0,0)'
   }
 
   return (
     <>
-      <nav
-        id="navbar"
-        ref={navRef}
-        className={scrolled ? 'scrolled' : ''}
-      >
+      <nav id="navbar" className={scrolled ? 'scrolled' : ''}>
         {/* Logo */}
-        <Link href="/" id="nav-logo" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+        <TransitionLink
+          href="/"
+          id="nav-logo"
+          style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}
+        >
           <Image
             src="/logo-white.png"
             alt="Silverring Ventures"
@@ -66,34 +67,26 @@ export default function Navbar() {
             priority
             style={{ objectFit: 'contain', height: 36, width: 'auto' }}
           />
-        </Link>
+        </TransitionLink>
 
         {/* Desktop links */}
         <div id="navbar-links" style={{ display: 'flex', alignItems: 'center' }}>
           {navLinks.map((link) => (
-            <Link
+            <TransitionLink
               key={link.href}
               href={link.href}
               className={pathname === link.href ? 'active' : ''}
             >
               {link.label}
-            </Link>
+            </TransitionLink>
           ))}
-          <Link
+
+          {/* Get In Touch — magnetic + fill effect */}
+          <TransitionLink
             href="/contact"
-            ref={ctaRef}
             onMouseMove={handleCtaMouseMove}
-            onMouseEnter={(e) => {
-              const t = e.currentTarget
-              t.style.background = 'var(--gold)'
-              t.style.color = 'var(--black)'
-            }}
-            onMouseLeave={(e) => {
-              const t = e.currentTarget
-              t.style.background = 'transparent'
-              t.style.color = 'var(--gold)'
-              t.style.transform = 'translate(0,0)'
-            }}
+            onMouseEnter={handleCtaMouseEnter}
+            onMouseLeave={handleCtaMouseLeave}
             data-cursor="cta"
             style={{
               marginLeft: 28,
@@ -113,7 +106,7 @@ export default function Navbar() {
             }}
           >
             Get In Touch
-          </Link>
+          </TransitionLink>
         </div>
 
         {/* Hamburger */}
@@ -135,15 +128,15 @@ export default function Navbar() {
       <div id="mobile-menu" className={menuOpen ? 'open' : ''}>
         <nav>
           {navLinks.map((link, i) => (
-            <Link
+            <TransitionLink
               key={link.href}
               href={link.href}
               style={{ animationDelay: `${i * 80}ms` }}
             >
               {link.label}
-            </Link>
+            </TransitionLink>
           ))}
-          <Link
+          <TransitionLink
             href="/contact"
             style={{
               animationDelay: `${navLinks.length * 80}ms`,
@@ -151,7 +144,7 @@ export default function Navbar() {
             }}
           >
             Get In Touch
-          </Link>
+          </TransitionLink>
         </nav>
       </div>
     </>

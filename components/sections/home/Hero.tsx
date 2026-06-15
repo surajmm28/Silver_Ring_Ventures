@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
 import { gyro } from '@/lib/gyroscope'
+import TransitionLink from '@/components/ui/TransitionLink'
 
 const BuildingFallback = dynamic(() => import('@/components/three/BuildingFallback'), {
   ssr: false,
@@ -376,12 +377,12 @@ export default function Hero() {
 
           {/* CTAs */}
           <div ref={ctasRef} className="hero-ctas" style={{ display: 'flex', gap: 48, opacity: 0 }}>
-            <a href="/projects" className="btn-text" data-cursor="cta">
+            <TransitionLink href="/projects" className="btn-text" data-cursor="cta">
               EXPLORE OUR WORK →
-            </a>
-            <a href="/ecosystem" className="btn-text" data-cursor="cta">
+            </TransitionLink>
+            <TransitionLink href="/ecosystem" className="btn-text" data-cursor="cta">
               OUR ECOSYSTEM →
-            </a>
+            </TransitionLink>
           </div>
         </div>
 

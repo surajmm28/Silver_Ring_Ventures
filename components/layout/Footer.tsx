@@ -1,7 +1,7 @@
 'use client'
 
-import Link from 'next/link'
 import Image from 'next/image'
+import TransitionLink from '@/components/ui/TransitionLink'
 
 export default function Footer() {
   const year = new Date().getFullYear()
@@ -52,7 +52,7 @@ export default function Footer() {
             { href: '/contact', label: 'Contact' },
           ].map((link) => (
             <div key={link.href} style={{ marginBottom: 12 }}>
-              <Link
+              <TransitionLink
                 href={link.href}
                 style={{
                   fontFamily: "'Barlow', sans-serif",
@@ -62,11 +62,11 @@ export default function Footer() {
                   textDecoration: 'none',
                   transition: 'color 0.3s',
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--white)' }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--muted)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--white)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--muted)' }}
               >
                 {link.label}
-              </Link>
+              </TransitionLink>
             </div>
           ))}
         </div>

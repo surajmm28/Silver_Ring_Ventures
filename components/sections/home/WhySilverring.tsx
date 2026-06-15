@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { gsap } from '@/lib/gsap'
 import { animateWords } from '@/lib/animations'
 import SectionTag from '@/components/ui/SectionTag'
+import TransitionLink from '@/components/ui/TransitionLink'
 import { values } from '@/lib/data/values'
 
 const HEADING_WORDS = [
@@ -128,9 +129,9 @@ export default function WhySilverring() {
             </div>
           ))}
           <div style={{ marginTop: 36 }}>
-            <a href="/about" className="btn-text" data-cursor="cta">
+            <TransitionLink href="/about" className="btn-text" data-cursor="cta">
               ALL 8 VALUES →
-            </a>
+            </TransitionLink>
           </div>
         </div>
       </div>

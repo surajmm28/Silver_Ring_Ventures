@@ -6,6 +6,7 @@ import { animateWords } from '@/lib/animations'
 import SectionTag from '@/components/ui/SectionTag'
 import { projects } from '@/lib/data/projects'
 import { gyro } from '@/lib/gyroscope'
+import TransitionLink from '@/components/ui/TransitionLink'
 
 const HEADING_WORDS = [
   { text: 'DEVELOPMENTS', gold: false },
@@ -311,9 +312,9 @@ export default function ProjectsPreview() {
       </div>
 
       <div className="projects-preview-footer" style={{ marginTop: 48, paddingRight: 60 }}>
-        <a href="/projects" className="btn-text" data-cursor="cta">
+        <TransitionLink href="/projects" className="btn-text" data-cursor="cta">
           VIEW ALL PROJECTS →
-        </a>
+        </TransitionLink>
       </div>
     </section>
   )

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { gsap } from '@/lib/gsap'
+import TransitionLink from '@/components/ui/TransitionLink'
 
 export default function CTASection() {
   const sectionRef = useRef<HTMLDivElement>(null)
@@ -82,7 +83,7 @@ export default function CTASection() {
         Ventures can deliver an integrated outcome for your next project.
       </div>
 
-      <a
+      <TransitionLink
         ref={btnRef}
         href="/contact"
         className="btn-outline"
@@ -91,7 +92,7 @@ export default function CTASection() {
       >
         <span>LET&apos;S TALK</span>
         <span className="btn-outline-arrow">→</span>
-      </a>
+      </TransitionLink>
     </section>
   )
 }

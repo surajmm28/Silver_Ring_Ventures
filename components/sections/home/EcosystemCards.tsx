@@ -6,6 +6,7 @@ import { animateWords } from '@/lib/animations'
 import SectionTag from '@/components/ui/SectionTag'
 import { units } from '@/lib/data/units'
 import { gyro } from '@/lib/gyroscope'
+import TransitionLink from '@/components/ui/TransitionLink'
 
 const HEADING_WORDS = [
   { text: 'FIVE', gold: false },
@@ -225,9 +226,9 @@ export default function EcosystemCards() {
       </div>
 
       <div style={{ marginTop: 48, paddingRight: 60 }}>
-        <a href="/ecosystem" className="btn-text" data-cursor="cta">
+        <TransitionLink href="/ecosystem" className="btn-text" data-cursor="cta">
           VIEW ALL UNITS →
-        </a>
+        </TransitionLink>
       </div>
     </section>
   )

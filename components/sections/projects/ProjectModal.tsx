@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from '@/lib/gsap'
 import type { Project } from '@/lib/data/projects'
+import TransitionLink from '@/components/ui/TransitionLink'
 
 interface ProjectModalProps {
   project: Project
@@ -194,9 +195,9 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             {project.description}
           </div>
 
-          <a href="/contact" className="btn-gold" style={{ width: '100%', justifyContent: 'center' }} data-cursor="cta">
+          <TransitionLink href="/contact" className="btn-gold" style={{ width: '100%', justifyContent: 'center' }} data-cursor="cta">
             ENQUIRE ABOUT THIS PROJECT →
-          </a>
+          </TransitionLink>
         </div>
       </div>
     </div>

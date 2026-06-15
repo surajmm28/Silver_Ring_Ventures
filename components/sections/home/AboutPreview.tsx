@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
 import { animateLines, animateMedia } from '@/lib/animations'
+import TransitionLink from '@/components/ui/TransitionLink'
 import SectionTag from '@/components/ui/SectionTag'
 
 const RingModel = dynamic(() => import('@/components/three/RingModel'), { ssr: false })
@@ -120,9 +121,9 @@ export default function AboutPreview() {
             creating properties that deliver value to investors, buyers, and communities.
           </div>
 
-          <a href="/about" className="btn-text" data-cursor="cta">
+          <TransitionLink href="/about" className="btn-text" data-cursor="cta">
             LEARN MORE →
-          </a>
+          </TransitionLink>
         </div>
 
         {/* Right — Ring */}
